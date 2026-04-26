@@ -1,0 +1,2800 @@
+local v1 = game:GetService("RunService")
+local u2 = game:GetService("TweenService")
+local u3 = game:GetService("UserInputService")
+local u4 = game:GetService("HttpService")
+local v5 = game:GetService("Players")
+local u6 = game:GetService("ContextActionService")
+local v7 = game:GetService("ReplicatedFirst").RepFirst_CORE:WaitForChild("StarterGui")
+local u8 = nil
+local u9 = v5.LocalPlayer
+local u10 = u9:GetMouse()
+local v11 = u9.PlayerScripts.Player_Scripts
+local u12 = game:GetService("ReplicatedStorage").RepStore_CORE
+local u13 = game:GetService("SoundService").Sound_CORE
+local u14 = require(u13.SoundMain)
+local v15 = u9.PlayerGui
+if not v15:FindFirstChild("ScreenGui") then
+    for _, v16 in pairs(v7:GetChildren()) do
+        if not v16:IsA("PackageLink") then
+            v16:Clone().Parent = v15
+        end
+    end
+end
+local u17 = v15:WaitForChild("ScreenGui").Frame
+local u18 = u17:WaitForChild("MidFrame")
+local u19 = v15:WaitForChild("LockPicking")
+v15:WaitForChild("FadeGui"):WaitForChild("Fader")
+local u20 = u17.Primitives
+local u21 = u17.NotificationReel
+local u22 = u18.Inventory.Frame
+local u23 = u18.Equipment
+local u24 = u23.Equipment.StatFrame
+local u25 = u18.MaterialProcess
+local u26 = u22.Skills
+local u27 = u17:WaitForChild("Hotbar")
+local u28 = u12.ClientEvents
+local u29 = script.ToggleWindow
+require(u18.QuestBoard.Townboard_Local)
+local v30 = script.Parent:WaitForChild("UIManager")
+local u31 = require(v30)
+local u32 = require(v30:WaitForChild("HoverMenu"))
+local u33 = require(script.Parent.InputManager)
+local u34 = require(script.Parent.HotbarController)
+local u35 = require(script.Const)
+local u36 = require(u12.SkillPerks)
+local u37 = require(v11.Parent:WaitForChild("PlayerModule"))
+local u38 = require(script.SlotUtil)
+local u39 = script.Parent.Readable
+local u40 = require(script.Station.Processor)
+local u41 = require(u12.Item)
+ReplicatedMulti = require(u12.GetXpMultiplier)
+local u42 = require(v11.MapQuest)
+local _ = v11.LocalWaterHandler.SwapChar
+CompassMod = require(v11.LocalCompass)
+local u43 = true
+local u44 = false
+local u45 = false
+local u46 = nil
+u26.PadList.Template.Visible = false
+local u47 = u41.InvSizes
+local u48 = {
+    ["Backpack"] = {},
+    ["Spellbook"] = {},
+    ["Equipment"] = {
+        ["Head"] = {},
+        ["Chest"] = {},
+        ["Legs"] = {},
+        ["Left Hand"] = {},
+        ["Right Hand"] = {},
+        ["Neck"] = {},
+        ["Back"] = {}
+    },
+    ["Quest"] = {}
+}
+local u49 = {}
+local u50 = "Backpack"
+local u51 = nil
+local u52 = nil
+local u53 = {
+    ["Backpack"] = 0,
+    ["Magic"] = 0,
+    ["Quest"] = 0
+}
+local u54 = {}
+local v55 = u22.Magic:WaitForChild("BookFrame")
+local u56 = u22.Magic:WaitForChild("Wheel")
+local u57 = u22.Magic:WaitForChild("Hint")
+local u58 = u22.Magic:WaitForChild("DestroyFrame")
+local u59 = v55:WaitForChild("ItemFrame")
+local u60 = v55:WaitForChild("ActionButton")
+local u61 = v55:WaitForChild("ConfirmFrame")
+local u62 = u61.Confirm
+local u63 = u61.Reject
+local u64 = false
+local u65 = nil
+local u66 = nil
+local u67 = nil
+local u68 = 0
+local u69 = Color3.new(0.619608, 0.72549, 0.796078)
+local u70 = Color3.new(0.2, 0.247059, 0.294118)
+local function u72(p71) --[[ Line: 127 ]]
+    --[[
+    Upvalues:
+        [1] = u2
+        [2] = u56
+    --]]
+    if p71 then
+        if string.len(p71) > 17 then
+            p71 = string.sub(p71, 0, 15) .. ".."
+        end
+        u56.ItemName.Text = p71
+        u2:Create(u56.ItemName, TweenInfo.new(0.1), {
+            ["TextTransparency"] = 0
+        }):Play()
+    else
+        u2:Create(u56.ItemName, TweenInfo.new(0.2), {
+            ["TextTransparency"] = 1
+        }):Play()
+    end
+end
+local function u76(p73, p74) --[[ Line: 139 ]]
+    --[[
+    Upvalues:
+        [1] = u2
+        [2] = u58
+    --]]
+    local v75 = TweenInfo.new(p74 or 0.3)
+    u2:Create(u58, v75, {
+        ["BackgroundTransparency"] = p73 and 0.55 or 1
+    }):Play()
+    u2:Create(u58.DestroyImage, v75, {
+        ["ImageTransparency"] = p73 and 0 or 1
+    }):Play()
+    u2:Create(u58.InsideFrame, v75, {
+        ["BackgroundTransparency"] = p73 and 0.8 or 1
+    }):Play()
+end
+u76(false, 0)
+local function u78() --[[ Line: 151 ]]
+    --[[
+    Upvalues:
+        [1] = u65
+        [2] = u67
+        [3] = u2
+        [4] = u70
+        [5] = u72
+    --]]
+    if u65 then
+        u67:Disconnect()
+        local v77 = {
+            ["ImageColor3"] = u70
+        }
+        u2:Create(u65:FindFirstChild("Highlight"), TweenInfo.new(0.1), v77):Play()
+        u2:Create(u65, TweenInfo.new(0.15, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+            ["Size"] = UDim2.new(0.5, 0, 0.5, 0)
+        }):Play()
+        u72()
+        u65 = nil
+    end
+end
+local function u93(u79, p80) --[[ Line: 165 ]]
+    --[[
+    Upvalues:
+        [1] = u56
+        [2] = u65
+        [3] = u78
+        [4] = u48
+        [5] = u72
+        [6] = u2
+        [7] = u69
+        [8] = u67
+        [9] = u10
+        [10] = u17
+        [11] = u31
+        [12] = u76
+        [13] = u33
+        [14] = u23
+        [15] = u28
+        [16] = u58
+    --]]
+    if typeof(u79) == "string" then
+        u79 = u56:FindFirstChild(u79) or u79
+    end
+    local v81 = u79.Name
+    if u79 and (u79 ~= u65 or p80) then
+        if u65 then
+            u78()
+        end
+        u65 = u79
+        local u82 = (u48.Spellbook.PageInfo or {})[u79.Name]
+        u72(u82 or "[Page " .. v81 .. "]")
+        local v83 = {
+            ["ImageColor3"] = u69
+        }
+        u2:Create(u79:FindFirstChild("Highlight"), TweenInfo.new(0.1), v83):Play()
+        u2:Create(u79, TweenInfo.new(0.15, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+            ["Size"] = UDim2.new(0.54, 0, 0.54, 0)
+        }):Play()
+        local u84 = nil
+        local u85 = u79.SpellSlot
+        local _ = u85.AbsoluteSize / 2
+        u67 = u85.MouseButton1Down:Connect(function(_, _) --[[ Line: 188 ]]
+            --[[
+            Upvalues:
+                [1] = u82
+                [2] = u85
+                [3] = u10
+                [4] = u17
+                [5] = u31
+                [6] = u76
+                [7] = u84
+                [8] = u33
+                [9] = u23
+                [10] = u28
+                [11] = u79
+                [12] = u58
+                [13] = u65
+                [14] = u2
+            --]]
+            if u82 then
+                local u86 = u85:Clone()
+                u85.Visible = false
+                local v87 = u85.AbsoluteSize
+                u86.Size = UDim2.fromOffset(v87.X, v87.Y)
+                u86.Position = UDim2.fromOffset(u10.X, u10.Y)
+                u86.AnchorPoint = Vector2.new(0.5, 0)
+                u86.ZIndex = 110
+                u86.Rotation = 0
+                u86.Parent = u17.Parent
+                u31.PlayEncodeSound("{\"Name\":\"Page\"}", "PickUp")
+                u76(true)
+                u84 = u33:ConnectToMouseEnded(function() --[[ Line: 204 ]]
+                    --[[
+                    Upvalues:
+                        [1] = u76
+                        [2] = u84
+                        [3] = u31
+                        [4] = u86
+                        [5] = u85
+                        [6] = u23
+                        [7] = u28
+                        [8] = u79
+                        [9] = u58
+                        [10] = u10
+                        [11] = u65
+                        [12] = u2
+                    --]]
+                    u76(false)
+                    u84:Disconnect()
+                    u84 = nil
+                    u31.PlayEncodeSound("{\"Name\":\"Page\"}", "Place")
+                    local function v88() --[[ Line: 210 ]]
+                        --[[
+                        Upvalues:
+                            [1] = u86
+                            [2] = u85
+                        --]]
+                        u86:Destroy()
+                        u85.Visible = true
+                    end
+                    if u31.hoveringSlot == u23.Equipment["Left Hand"] then
+                        u28.HotbarEvent:FireServer("Equip", {
+                            ["IsMagic"] = true,
+                            ["Drag"] = true,
+                            ["Index"] = u79.Name
+                        })
+                        return v88()
+                    end
+                    local v89 = u58.AbsoluteSize / 2
+                    local v90 = u58.AbsolutePosition + v89
+                    if (Vector2.new(u10.X, u10.Y) - v90).Magnitude <= v89.Magnitude then
+                        SpellbookRemove(u79.Name)
+                    elseif u65 and u65 ~= u79 then
+                        local v91 = u65.SpellSlot.AbsolutePosition + u65.SpellSlot.AbsoluteSize / 2
+                        u2:Create(u86, TweenInfo.new(0.1), {
+                            ["Position"] = UDim2.fromOffset(v91.X, v91.Y)
+                        }):Play()
+                        local v92 = u31.DestroyOnUpdate
+                        table.insert(v92, v88)
+                        u28.ModifySpell:FireServer(u79.Name, u65.Name)
+                        return
+                    end
+                    u86:Destroy()
+                    u85.Visible = true
+                end)
+                while u84 do
+                    task.wait()
+                    u86.Position = UDim2.fromOffset(u10.X, u10.Y)
+                end
+            end
+        end)
+    end
+end
+local function u101(p94) --[[ Line: 246 ]]
+    --[[
+    Upvalues:
+        [1] = u33
+        [2] = u68
+        [3] = u93
+        [4] = u65
+        [5] = u66
+        [6] = u78
+    --]]
+    local v95 = {}
+    for v96, v97 in pairs(u33.WheelDirections) do
+        if u68 >= tonumber(v96) then
+            local v98 = (v97 - p94).Magnitude
+            if not v95[1] or v98 < v95[1] then
+                v95 = { v98, v96 }
+            end
+        end
+    end
+    local v99 = v95[2] and (v95[2] == "3" or v95[2] == "6") and 0.8 or 1.1
+    if v95[1] and v95[1] < v99 then
+        u93(v95[2])
+    else
+        local u100 = u65
+        u66 = task.delay(0.3, function() --[[ Line: 260 ]]
+            --[[
+            Upvalues:
+                [1] = u65
+                [2] = u100
+                [3] = u78
+            --]]
+            if u65 == u100 then
+                u78()
+            end
+        end)
+    end
+end
+u56.MouseEnter:Connect(function() --[[ Line: 267 ]]
+    --[[
+    Upvalues:
+        [1] = u64
+        [2] = u33
+        [3] = u56
+        [4] = u101
+        [5] = u78
+    --]]
+    u64 = true
+    u33:BindToMouseMove(function(p102) --[[ Line: 270 ]]
+        --[[
+        Upvalues:
+            [1] = u56
+            [2] = u101
+            [3] = u78
+        --]]
+        local v103 = p102 - (u56.AbsolutePosition + u56.AbsoluteSize / 2)
+        if v103.Magnitude / u56.AbsoluteSize.X > 0.155 then
+            local v104 = v103.Unit
+            u101(Vector2.new(v104.X, -v104.Y))
+        else
+            u78()
+        end
+    end, function() --[[ Line: 281 ]]
+        --[[
+        Upvalues:
+            [1] = u64
+        --]]
+        return not u64
+    end)
+end)
+u56.MouseLeave:Connect(function() --[[ Line: 284 ]]
+    --[[
+    Upvalues:
+        [1] = u78
+        [2] = u64
+    --]]
+    u78()
+    u64 = false
+end)
+local u105 = {}
+local function u113(p106, p107) --[[ Line: 290 ]]
+    --[[
+    Upvalues:
+        [1] = u61
+        [2] = u2
+        [3] = u60
+        [4] = u62
+        [5] = u63
+        [6] = u105
+    --]]
+    local u108 = u61.SPELL
+    local u109 = TweenInfo.new(0.3)
+    if p106 then
+        u108.OutlineFrame.UIStroke.Color = p107
+        u108.Backdrop.ImageColor3 = p107
+        u108.OutlineFrame.Con.UIGradient.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.new(0.603922, 0.458824, 0.317647)),
+            ColorSequenceKeypoint.new(0.197, Color3.new(0.603922, 0.458824, 0.317647)),
+            ColorSequenceKeypoint.new(0.879, p107),
+            ColorSequenceKeypoint.new(1, p107)
+        })
+        u61.ActionText.UIGradient.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)), ColorSequenceKeypoint.new(0.5, Color3.new(1, 1, 1)), ColorSequenceKeypoint.new(1, p107) })
+        u2:Create(u60, TweenInfo.new(0.1), {
+            ["BackgroundTransparency"] = 1
+        }):Play()
+        u2:Create(u60.FrontFade, TweenInfo.new(0.1), {
+            ["BackgroundTransparency"] = 1
+        }):Play()
+        u2:Create(u60.Action, TweenInfo.new(0.1), {
+            ["ImageTransparency"] = 1
+        }):Play()
+        u2:Create(u60.Action.TextLabel, TweenInfo.new(0.1), {
+            ["TextTransparency"] = 1
+        }):Play()
+        u108.OutlineFrame.UIStroke.Transparency = 1
+        u108.OutlineFrame.Con.BackgroundTransparency = 1
+        u108.ImageTransparency = 1
+        u2:Create(u108.OutlineFrame.UIStroke, u109, {
+            ["Transparency"] = 0
+        }):Play()
+        u2:Create(u108.OutlineFrame.Con, u109, {
+            ["BackgroundTransparency"] = 0
+        }):Play()
+        u2:Create(u108, u109, {
+            ["ImageTransparency"] = 0
+        }):Play()
+        u108.Backdrop.ImageTransparency = 1
+        u61.ActionText.TextTransparency = 1
+        task.delay(0.2, function() --[[ Line: 328 ]]
+            --[[
+            Upvalues:
+                [1] = u2
+                [2] = u108
+                [3] = u109
+                [4] = u61
+            --]]
+            u2:Create(u108.Backdrop, u109, {
+                ["ImageTransparency"] = 0
+            }):Play()
+            u2:Create(u61.ActionText, u109, {
+                ["TextTransparency"] = 0
+            }):Play()
+        end)
+        for _, u110 in { u62, u63 } do
+            u110.BackgroundTransparency = 1
+            u110.FrontFade.BackgroundTransparency = 1
+            u110.Action.ImageTransparency = 1
+            u110.Action.TextLabel.TextTransparency = 1
+            task.delay(0.2, function() --[[ Line: 338 ]]
+                --[[
+                Upvalues:
+                    [1] = u2
+                    [2] = u110
+                    [3] = u109
+                --]]
+                u2:Create(u110, u109, {
+                    ["BackgroundTransparency"] = 0
+                }):Play()
+                u2:Create(u110.FrontFade, u109, {
+                    ["BackgroundTransparency"] = 0
+                }):Play()
+                u2:Create(u110.Action, u109, {
+                    ["ImageTransparency"] = 0
+                }):Play()
+                u2:Create(u110.Action.TextLabel, u109, {
+                    ["TextTransparency"] = 0
+                }):Play()
+            end)
+        end
+    else
+        for _, v111 in u105 do
+            v111:Disconnect()
+        end
+        u105 = {}
+        u2:Create(u108.OutlineFrame.UIStroke, u109, {
+            ["Transparency"] = 1
+        }):Play()
+        u2:Create(u108.OutlineFrame.Con, u109, {
+            ["BackgroundTransparency"] = 1
+        }):Play()
+        u2:Create(u108, u109, {
+            ["ImageTransparency"] = 1
+        }):Play()
+        u2:Create(u108.Backdrop, u109, {
+            ["ImageTransparency"] = 1
+        }):Play()
+        u2:Create(u61.ActionText, u109, {
+            ["TextTransparency"] = 1
+        }):Play()
+        u2:Create(u60, u109, {
+            ["BackgroundTransparency"] = 0
+        }):Play()
+        u2:Create(u60.FrontFade, u109, {
+            ["BackgroundTransparency"] = 0
+        }):Play()
+        u2:Create(u60.Action, u109, {
+            ["ImageTransparency"] = 0
+        }):Play()
+        u2:Create(u60.Action.TextLabel, u109, {
+            ["TextTransparency"] = 0
+        }):Play()
+        for _, v112 in { u62, u63 } do
+            u2:Create(v112, u109, {
+                ["BackgroundTransparency"] = 1
+            }):Play()
+            u2:Create(v112.FrontFade, u109, {
+                ["BackgroundTransparency"] = 1
+            }):Play()
+            u2:Create(v112.Action, u109, {
+                ["ImageTransparency"] = 1
+            }):Play()
+            u2:Create(v112.Action.TextLabel, u109, {
+                ["TextTransparency"] = 1
+            }):Play()
+        end
+        task.wait(0.2)
+    end
+    u61.Visible = p106
+end
+function SpellbookRemove(u114)
+    --[[
+    Upvalues:
+        [1] = u48
+        [2] = u41
+        [3] = u105
+        [4] = u62
+        [5] = u28
+        [6] = u113
+        [7] = u63
+        [8] = u61
+    --]]
+    local v115 = u48.Spellbook.PageInfo[u114]
+    if typeof(v115) == "string" and script:GetAttribute("InventoryOpen") then
+        local v116 = u41.new(u41.PageFromSpell[v115])
+        local v117 = u105
+        local v118 = u62.Activated
+        local function v119() --[[ Line: 377 ]]
+            --[[
+            Upvalues:
+                [1] = u28
+                [2] = u114
+                [3] = u113
+            --]]
+            u28.ModifySpell:FireServer(u114)
+            u113(false)
+        end
+        table.insert(v117, v118:Connect(v119))
+        local v120 = u105
+        local v121 = u63.Activated
+        local function v122() --[[ Line: 382 ]]
+            --[[
+            Upvalues:
+                [1] = u113
+            --]]
+            u113(false)
+        end
+        table.insert(v120, v121:Connect(v122))
+        u61.SPELL.Image = v116.ImageId
+        u61.ActionText.Text = "Do you wish to destroy \'" .. v116.Name .. "\'?"
+        u113(true, Color3.new(0.792157, 0.164706, 0.0392157))
+    end
+end
+local function v132(u123, p124) --[[ Line: 389 ]]
+    --[[
+    Upvalues:
+        [1] = u48
+        [2] = u41
+        [3] = u105
+        [4] = u62
+        [5] = u28
+        [6] = u113
+        [7] = u63
+        [8] = u61
+    --]]
+    if not u48.Spellbook.Name then
+        return ReceiveNotification("You must have a spellbook equipped", nil, nil, "Error")
+    end
+    local v125 = u41.new(u48.Spellbook.Name)
+    if #(u48.Spellbook.PageInfo or {}) >= v125.PageSlots then
+        return ReceiveNotification("Your current spellbook is full", nil, nil, "Error")
+    end
+    if not script:GetAttribute("InventoryOpen") then
+        ToggleWindows("Inventory", "Equipment")
+    end
+    ChangeTab("Inventory", "Magic")
+    local v126 = u105
+    local v127 = u62.Activated
+    local function v128() --[[ Line: 398 ]]
+        --[[
+        Upvalues:
+            [1] = u28
+            [2] = u123
+            [3] = u113
+        --]]
+        u28.CombineItem:FireServer("PAGE", u123)
+        u113(false)
+    end
+    table.insert(v126, v127:Connect(v128))
+    local v129 = u105
+    local v130 = u63.Activated
+    local function v131() --[[ Line: 403 ]]
+        --[[
+        Upvalues:
+            [1] = u113
+        --]]
+        u113(false)
+    end
+    table.insert(v129, v130:Connect(v131))
+    u61.SPELL.Image = p124.ImageId
+    u61.ActionText.Text = "Add \'" .. p124.Name .. "\' to Spellbook?"
+    u113(true, Color3.new(0.0352941, 0.337255, 0.603922))
+end
+script.AppendSpellbook.Event:Connect(v132)
+local function u143(p133, p134) --[[ Line: 411 ]]
+    --[[
+    Upvalues:
+        [1] = u8
+        [2] = u48
+        [3] = u41
+        [4] = u4
+        [5] = u52
+        [6] = u34
+        [7] = u12
+    --]]
+    local v135 = nil
+    local v136 = p133
+    local v137 = u8:GetAttribute("Sheathed")
+    if not u48.Spellbook.PageInfo then
+        return ReceiveNotification(v136 == p133 and (p134 and "Your spellbook only has one usable page" or "Your spellbook is empty") or "You lack skills required for this spellbook", nil, nil, "Error")
+    end
+    local v138 = 0
+    while true do
+        v138 = v138 + 1
+        if not u48.Spellbook.PageInfo[v136] then
+            v136 = nil
+        end
+        local v139, v140 = next(u48.Spellbook.PageInfo, v136)
+        if not v139 then
+            v139, v140 = next(u48.Spellbook.PageInfo)
+        end
+        if v139 == p133 or v138 >= 7 then
+            v139 = v135
+            break
+        end
+        local v141 = u41:InvokeVariable(u41.PageFromSpell[v140], "RequiredSkills")
+        local v142 = v141 and u4:JSONDecode(v141).Magic or nil
+        if not v142 or u52.Magic.Level >= v142 then
+            break
+        end
+        v136 = v139
+    end
+    if v139 then
+        if p134 then
+            if v137 then
+                u34.HotSwap:Invoke(nil, true)
+            else
+                u12.SpellAssets.Events.CycleSpell.NextSpell:Fire(v139)
+            end
+        else
+            u34:HitNumberBind({
+                ["IsMagic"] = true,
+                ["Index"] = v139
+            }, {
+                ["Name"] = "Spellbook"
+            })
+        end
+        return
+    elseif v137 and p134 then
+        return u34.HotSwap:Invoke(nil, true)
+    else
+        return ReceiveNotification(v136 == p133 and (p134 and "Your spellbook only has one usable page" or "Your spellbook is empty") or "You lack skills required for this spellbook", nil, nil, "Error")
+    end
+end
+function OnNextSpell(_, p144)
+    --[[
+    Upvalues:
+        [1] = u48
+        [2] = u38
+        [3] = u28
+        [4] = u143
+    --]]
+    if p144 == Enum.UserInputState.Cancel or p144 == Enum.UserInputState.End then
+        return
+    else
+        if not u48.Spellbook.Name then
+            local v145, v146 = u38:LocalSearchInventory("Spellbook-")
+            if not v145 then
+                return ReceiveNotification("You have no spellbook equipped", nil, nil, "Error")
+            end
+            u28.EquipItem:FireServer(v146)
+            while not u48.Spellbook.Name do
+                task.wait(0.1)
+            end
+        end
+        local v147 = u48.Equipment["Left Hand"]
+        local v148 = v147.PageIndex and v147 and v147 or nil
+        if v148 then
+            local v149 = u143
+            local v150 = v148.PageIndex
+            v149(tostring(v150), v148)
+        else
+            u143()
+        end
+    end
+end
+local u151 = nil
+local function u184(u152) --[[ Line: 496 ]]
+    --[[
+    Upvalues:
+        [1] = u151
+        [2] = u31
+        [3] = u54
+        [4] = u56
+        [5] = u68
+        [6] = u2
+        [7] = u65
+        [8] = u41
+        [9] = u59
+        [10] = u60
+        [11] = u57
+        [12] = u93
+        [13] = u46
+        [14] = u32
+    --]]
+    local v153 = u151 and u152.UID
+    if v153 then
+        v153 = u151.UID ~= u152.UID
+    end
+    if script:GetAttribute("InventoryOpen") and v153 then
+        ChangeTab("Inventory", "Magic")
+    end
+    if u151 and (u151.Name and not u152.Name) then
+        u31.PlayEncodeSound("{\"Name\":\"Book\"}", "Place")
+    elseif v153 then
+        u31.PlayEncodeSound("{}", "Place")
+    end
+    if next(u54) then
+        for _, v154 in pairs(u54) do
+            v154:Disconnect()
+        end
+    end
+    local function v166(p155) --[[ Line: 517 ]]
+        --[[
+        Upvalues:
+            [1] = u56
+            [2] = u68
+            [3] = u2
+            [4] = u65
+            [5] = u41
+        --]]
+        for v156 = 1, 6 do
+            local v157 = u56:FindFirstChild((tostring(v156)))
+            if v157 then
+                local v158 = v156 <= u68
+                local v159 = v158 and Color3.new(0.196078, 0.317647, 0.47451) or Color3.new(0.184314, 0.184314, 0.184314)
+                u2:Create(v157, TweenInfo.new(0.3), {
+                    ["ImageColor3"] = v159
+                }):Play()
+                local v160 = v158 and Color3.new(0.2, 0.247059, 0.294118) or Color3.new(0.141176, 0.141176, 0.141176)
+                u2:Create(v157.Highlight, TweenInfo.new(0.3), {
+                    ["ImageColor3"] = v160
+                }):Play()
+                local u161 = v157.SpellSlot
+                local v162 = u65 ~= nil
+                local v163 = TweenInfo.new(v162 and 0 or 0.2)
+                if v158 and p155[tostring(v156)] then
+                    local v164 = p155[tostring(v156)]
+                    local v165 = u41:InvokeVariable(u41.PageFromSpell[v164], "ImageId")
+                    if v165 then
+                        u161.Image = v165
+                        u2:Create(u161, v163, {
+                            ["ImageTransparency"] = 0
+                        }):Play()
+                        u161:SetAttribute("Name", v164)
+                    else
+                        warn("Missing Page Item: ", v164)
+                    end
+                else
+                    local _ = u65 == nil
+                    u161:SetAttribute("Name", nil)
+                    u2:Create(u161, v163, {
+                        ["ImageTransparency"] = 1
+                    }):Play()
+                    task.delay(v163.Time, function() --[[ Line: 546 ]]
+                        --[[
+                        Upvalues:
+                            [1] = u161
+                        --]]
+                        if u161:GetAttribute("Name") == nil then
+                            u161.Image = ""
+                        end
+                    end)
+                end
+            end
+        end
+    end
+    local u167 = u59.ItemImage
+    local v168 = u59.Parent.Parent.Title
+    u151 = u152
+    if not u152.Name then
+        u167.Image = ""
+        v168.Text = "Empty"
+        if u60.BackgroundTransparency ~= 0.5 then
+            u2:Create(u60, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {
+                ["BackgroundTransparency"] = 0.5
+            }):Play()
+            u2:Create(u60.Action, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {
+                ["ImageTransparency"] = 0.65
+            }):Play()
+            u2:Create(u60.Action.TextLabel, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {
+                ["TextTransparency"] = 0.5
+            }):Play()
+        end
+        u68 = 0
+        u57.Text = "Equip a Spellbook to manage your loadout."
+        return v166()
+    end
+    if u60.BackgroundTransparency ~= 0 then
+        u2:Create(u60, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {
+            ["BackgroundTransparency"] = 0
+        }):Play()
+        u2:Create(u60.Action, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {
+            ["ImageTransparency"] = 0.19
+        }):Play()
+        u2:Create(u60.Action.TextLabel, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {
+            ["TextTransparency"] = 0
+        }):Play()
+    end
+    u57.Text = u31.FormatBindString("Press ~Next Spell~ or Hold ~Weapon Wheel~ to Use Spells.")
+    v168.Text = u152.Name
+    local u169 = u41.new(u152.Name)
+    u167.Image = u169.ImageId
+    u68 = u169.PageSlots or 0
+    local v170 = u152.PageInfo or {}
+    local v171 = u68
+    local v172 = 0
+    for _, _ in v170 do
+        v172 = v172 + 1
+    end
+    local _ = v171 - v172
+    v166(v170)
+    if u65 then
+        u93(u65, true)
+    end
+    local u173 = TweenInfo.new(0.8, Enum.EasingStyle.Quint)
+    local u174 = TweenInfo.new(1.2, Enum.EasingStyle.Circular, Enum.EasingDirection.InOut, -1, true)
+    local u175 = false
+    local u176 = false
+    local u177 = nil
+    u54 = {
+        ["A"] = u167.MouseEnter:Connect(function() --[[ Line: 594 ]]
+            --[[
+            Upvalues:
+                [1] = u46
+                [2] = u175
+                [3] = u2
+                [4] = u59
+                [5] = u173
+                [6] = u177
+                [7] = u167
+                [8] = u174
+                [9] = u176
+            --]]
+            if not u46 then
+                u175 = true
+                u2:Create(u59.BackEnchant, u173, {
+                    ["ImageTransparency"] = 0
+                }):Play()
+                u177 = u2:Create(u167, u174, {
+                    ["Size"] = UDim2.new(1, 0, 1, 0)
+                })
+                u177:Play()
+                if not u176 then
+                    u176 = true
+                    while u176 do
+                        task.wait()
+                        local v178 = u59.BackEnchant.UIGradient.Rotation + 1
+                        if v178 >= 180 then
+                            v178 = v178 - 360
+                        end
+                        u59.BackEnchant.UIGradient.Rotation = v178
+                    end
+                end
+            end
+        end),
+        ["B"] = u167.MouseLeave:Connect(function() --[[ Line: 613 ]]
+            --[[
+            Upvalues:
+                [1] = u177
+                [2] = u2
+                [3] = u167
+                [4] = u173
+                [5] = u59
+                [6] = u175
+                [7] = u176
+            --]]
+            if u177 then
+                u177:Cancel()
+            end
+            u2:Create(u167, u173, {
+                ["Size"] = UDim2.new(0.9, 0, 0.9, 0)
+            }):Play()
+            u2:Create(u59.BackEnchant, u173, {
+                ["ImageTransparency"] = 1
+            }):Play()
+            u175 = false
+            task.delay(0.4, function() --[[ Line: 618 ]]
+                --[[
+                Upvalues:
+                    [1] = u175
+                    [2] = u176
+                --]]
+                if not u175 then
+                    u176 = false
+                end
+            end)
+        end),
+        ["C"] = u167.MouseButton2Down:Connect(function() --[[ Line: 623 ]]
+            --[[
+            Upvalues:
+                [1] = u59
+                [2] = u175
+                [3] = u169
+                [4] = u152
+                [5] = u32
+            --]]
+            local v179 = u59
+            local function v180() --[[ Line: 625 ]]
+                --[[
+                Upvalues:
+                    [1] = u175
+                    [2] = u59
+                --]]
+                return u175 and u59 or nil
+            end
+            local v181 = u169
+            for v182, v183 in u152 do
+                v181[v182] = v183
+            end
+            if u32.InfoOpen then
+                u32.OpenMoreFrame()
+            else
+                u32.OpenInfoMenu(v179, v181, v179.AbsolutePosition, v180, u152)
+            end
+        end)
+    }
+end
+u60.Activated:Connect(function() --[[ Line: 638 ]]
+    --[[
+    Upvalues:
+        [1] = u61
+        [2] = u151
+        [3] = u28
+    --]]
+    if u61.Visible then
+        return
+    elseif u151 and u151.Name then
+        u28.UnEquipItem:FireServer(u151)
+    end
+end)
+function CreateEmptySlots()
+    --[[
+    Upvalues:
+        [1] = u22
+        [2] = u47
+        [3] = u20
+        [4] = u31
+        [5] = u23
+    --]]
+    local v185 = nil
+    local v186 = nil
+    local v187 = nil
+    for _, v188 in pairs(u22:GetChildren()) do
+        local v189 = v188:FindFirstChild("Slots")
+        if v189 then
+            local v190 = u47[v188.Name][1]
+            local v191 = u47[v188.Name][2]
+            local v192 = v189.Parent.Visible
+            v189.Parent.Visible = true
+            for v193 = 1, v190 * v191 do
+                local v194 = u20.Slot:Clone()
+                v194.LayoutOrder = v193
+                v194.Visible = true
+                v194.Name = v193
+                v194.Parent = v189
+                v194:SetAttribute("Populated", false)
+                v194:SetAttribute("Parent", "Inventory")
+                u31:HandleDrag(v194)
+            end
+            v189.UIGridLayout.FillDirectionMaxCells = v190
+            v185 = v185 or v189.UIGridLayout.AbsoluteCellSize
+            v186 = v186 or v189.UIGridLayout.AbsoluteContentSize
+            v187 = v187 or Vector2.new(v185.X, v185.Y)
+            local _ = v187.X / v189.AbsoluteSize.X
+            local _ = v187.Y / v189.AbsoluteSize.Y
+            v189.Parent.Visible = v192
+        end
+        if v188:FindFirstChild("ModuleScript") then
+            require(v188.ModuleScript)
+        end
+    end
+    local v195 = u20.Slot:GetChildren()
+    for _, u196 in pairs(u23.Equipment:GetChildren()) do
+        if u196:IsA("ImageButton") then
+            for _, v197 in pairs(v195) do
+                if not v197:IsA("UIAspectRatioConstraint") then
+                    v197:Clone().Parent = u196
+                end
+            end
+            spawn(function() --[[ Line: 693 ]]
+                --[[
+                Upvalues:
+                    [1] = u31
+                    [2] = u196
+                --]]
+                u31:HandleDrag(u196)
+            end)
+        end
+    end
+end
+function GetPackWeight()
+    --[[
+    Upvalues:
+        [1] = u48
+    --]]
+    local v198 = 0
+    for _, v199 in pairs(u48.Backpack) do
+        if v199.Weight then
+            v198 = v198 + v199.Weight
+            if v199.Quantity and v199.Quantity > 1 then
+                v198 = v198 + (v199.Quantity - 1) * v199.Weight
+            end
+        end
+    end
+end
+function PopulateSlot(p200, p201, p202)
+    --[[
+    Upvalues:
+        [1] = u17
+        [2] = u4
+        [3] = u38
+        [4] = u41
+        [5] = u48
+    --]]
+    local v203 = u17.Primitives.Slot.ZIndex
+    local v204
+    if p201:GetAttribute("Populated") then
+        local v205 = u4:JSONDecode(p201:GetAttribute("ItemEncode"))
+        v204 = next(p200) ~= nil
+        for v206, v207 in pairs(p200) do
+            if v205[v206] ~= v207 then
+                v204 = false
+                break
+            end
+            v205[v206] = nil
+        end
+        if v204 then
+            for v208, v209 in pairs(v205) do
+                if p200[v208] ~= v209 then
+                    v204 = false
+                    break
+                end
+            end
+        end
+    elseif p200.Name == nil then
+        v204 = true
+    else
+        v204 = false
+    end
+    if not v204 then
+        if u38.SlotConnections[p201.Name] then
+            u38.SlotConnections[p201.Name](p200)
+        end
+        if p200.Name then
+            local v210
+            if p200.Name == "CurrentSpellbook" then
+                v210 = u41.new(u48.Spellbook.Name, 1)
+                local v211 = u48.Spellbook
+                v211.FromIndex = true
+                v211.PageIndex = p200.PageIndex
+                p200 = v211
+            else
+                v210 = u41.new(p200.Name, p200.Quantity)
+                for v212, v213 in pairs(p200) do
+                    v210[v212] = v213
+                end
+            end
+            if u38.HighlightByName[p200.Name] then
+                u38.QuestHighlightSlot(p201, p200.Name)
+            end
+            u38:PopulateEmptySlot(p201, v210, v203)
+            p201:SetAttribute("ItemEncode", u4:JSONEncode(p200))
+        else
+            u38:ClearSlot(p201, v203)
+        end
+        if p202 then
+            p202(p200, p201)
+        end
+    end
+end
+local v214 = u21.ReelOptions
+local _ = v214.Color
+v214:GetAttribute("NotificationNum")
+local u215 = {}
+function FadeReel(u216)
+    --[[
+    Upvalues:
+        [1] = u2
+        [2] = u215
+    --]]
+    local v217 = TweenInfo.new(2, Enum.EasingStyle.Quad)
+    local u218 = u2:Create(u216.Label, v217, {
+        ["TextTransparency"] = 1,
+        ["TextStrokeTransparency"] = 1
+    })
+    local u219 = u2:Create(u216.Icon, v217, {
+        ["ImageTransparency"] = 1
+    })
+    local u220 = u2:Create(u216, v217, {
+        ["BackgroundTransparency"] = 1
+    })
+    if #u215 >= 10 then
+        u215[1](true)
+    end
+    local function v222(p221) --[[ Line: 781 ]]
+        --[[
+        Upvalues:
+            [1] = u216
+            [2] = u215
+            [3] = u218
+            [4] = u219
+            [5] = u220
+        --]]
+        if u216.Parent ~= nil and u216.Name ~= "Destroy" then
+            u216.Name = "Destory"
+            table.remove(u215, 1)
+            if not p221 then
+                u218:Play()
+                u219:Play()
+                u220:Play()
+                u218.Completed:Wait()
+            end
+            u216:Destroy()
+        end
+    end
+    local v223 = u215
+    table.insert(v223, v222)
+    task.delay(10, v222)
+end
+local u224 = {
+    ["err"] = Color3.new(0.831373, 0.172549, 0.184314)
+}
+function ReceiveNotification(u225, ...)
+    --[[
+    Upvalues:
+        [1] = u21
+        [2] = u35
+        [3] = u224
+        [4] = u13
+        [5] = u14
+    --]]
+    local u226 = { ... }
+    coroutine.resume(coroutine.create(function() --[[ Line: 805 ]]
+        --[[
+        Upvalues:
+            [1] = u21
+            [2] = u226
+            [3] = u35
+            [4] = u224
+            [5] = u225
+            [6] = u13
+            [7] = u14
+        --]]
+        while script:GetAttribute("Screen") do
+            task.wait(1)
+        end
+        local v227 = u21.NotifTemp:Clone()
+        local v228 = u226[1]
+        local v229 = u35.Skill_Info[v228]
+        if v229 then
+            v228 = u35.Skill_Info[v228].img or v228
+        end
+        local v230 = u226[2] or (v229 and Color3.new(1, 1, 0) or nil)
+        local v231 = u226[3]
+        local v232 = u224[v230] or v230
+        v227.Name = "Notif"
+        v227.Label.Text = u225
+        v227.Label.TextColor3 = v232 or Color3.new(1, 1, 1)
+        if v231 and typeof(v231) == "string" then
+            local u233 = u13.UI:FindFirstChild(v231)
+            if u233 and not u233.IsPlaying then
+                u233.SoundGroup = u14.GetSoundGroup("Notifications")
+                u233:Play()
+                task.spawn(function() --[[ Line: 829 ]]
+                    --[[
+                    Upvalues:
+                        [1] = u233
+                        [2] = u14
+                    --]]
+                    while u233.IsPlaying do
+                        task.wait(0.5)
+                    end
+                    u233.SoundGroup = u14.GetSoundGroup("UI")
+                end)
+            end
+        end
+        if v228 then
+            v227.Icon.Image = v228
+            if v229 then
+                v227.Icon.ImageColor3 = v232
+            end
+            v227.Icon.Visible = true
+        end
+        v227.Visible = true
+        v227.Parent = u21
+        FadeReel(v227, 10)
+        u226 = nil
+    end))
+end
+function GetColor(p234, p235)
+    local v236 = nil
+    local v237 = nil
+    for v238, v239 in pairs(p234.Keypoints) do
+        if v236 then
+            if v239.Time > v236.Time and v239.Time <= p235 then
+                v237 = p234.Keypoints[v238 + 1] or v239
+                v236 = v239
+            end
+        else
+            v237 = p234.Keypoints[v238 + 1] or v239
+            v236 = v239
+        end
+    end
+    local v240 = (p235 - v236.Time) / (v237.Time - v236.Time)
+    return v236.Value:lerp(v237.Value, v240)
+end
+function UpdateAlerts()
+    --[[
+    Upvalues:
+        [1] = u22
+        [2] = u53
+    --]]
+    for _, v241 in pairs(u22.Tabs:GetChildren()) do
+        if v241:IsA("TextButton") then
+            local v242 = u53[v241.Name]
+            if v242 and v242 > 0 then
+                v241.Alert.q.Text = v242
+                v241.Alert.Visible = true
+            else
+                v241.Alert.Visible = false
+            end
+        end
+    end
+end
+function UpdateInventoryGui()
+    --[[
+    Upvalues:
+        [1] = u31
+        [2] = u48
+        [3] = u184
+        [4] = u23
+        [5] = u22
+        [6] = u38
+        [7] = u41
+        [8] = u2
+        [9] = u25
+    --]]
+    UpdateAlerts()
+    u31.ClearMergeFrames()
+    for v243, v244 in pairs(u48) do
+        if v243 == "Spellbook" then
+            u184(v244)
+        else
+            for v245, v246 in pairs(v244) do
+                local v247
+                if v243 == "Equipment" then
+                    v247 = u23[v243][v245]
+                    ::l9::
+                    if v247:FindFirstChild("ItemFrame") then
+                        PopulateSlot(v246, v247)
+                    end
+                elseif u22:FindFirstChild(v243) and u22[v243].Slots:FindFirstChild(v245) then
+                    v247 = u22[v243].Slots[v245]
+                    goto l9
+                end
+            end
+        end
+    end
+    u38.CheckForMissingHighlights()
+    local v248 = u48.Equipment["Right Hand"].Name
+    local v249 = v248 or u48.Equipment["Left Hand"].Name
+    local v250 = TweenInfo.new(0.5)
+    if u41:InvokeVariable(v249, "EquipType") == "Both Hands" then
+        local v251 = u23.Equipment[(v248 and "Right" or "Left") .. " Hand"]
+        local v252 = u23.Equipment[(v248 and "Left" or "Right") .. " Hand"]
+        u2:Create(v251, v250, {
+            ["ImageTransparency"] = 1
+        }):Play()
+        u2:Create(v252, v250, {
+            ["ImageTransparency"] = 0
+        }):Play()
+    else
+        u2:Create(u23.Equipment["Right Hand"], v250, {
+            ["ImageTransparency"] = 1
+        }):Play()
+        u2:Create(u23.Equipment["Left Hand"], v250, {
+            ["ImageTransparency"] = 1
+        }):Play()
+    end
+    if u25.Visible and u25.Anvil.Visible then
+        script.Station.AnvilEvent:Fire("REFRESH")
+    end
+    if u31.WaitingForPop then
+        u31.WaitingForPop = false
+    end
+end
+function GetLocalData(p253)
+    --[[
+    Upvalues:
+        [1] = u48
+        [2] = u53
+        [3] = u50
+        [4] = u49
+    --]]
+    local v254 = {
+        ["Inventory"] = u48,
+        ["InventoryAlerts"] = u53,
+        ["CurrentTab"] = u50,
+        ["Hotbar"] = u49
+    }
+    local v255 = string.split(p253, ".")
+    local v256 = nil
+    for _, v257 in next, v255 do
+        local v258 = tonumber(v257) or v257
+        v256 = v256 and v256[v258] or v254[v258]
+    end
+    return v256
+end
+function GetSkillData(p259)
+    --[[
+    Upvalues:
+        [1] = u52
+    --]]
+    if u52 then
+        if p259 then
+            return u52[p259]
+        else
+            return u52
+        end
+    else
+        return {}
+    end
+end
+function HandleInventoryAlerts(p260)
+    --[[
+    Upvalues:
+        [1] = u53
+        [2] = u22
+    --]]
+    u53 = p260
+    if u22.Visible then
+        UpdateAlerts()
+    end
+end
+local u261 = {
+    ["Damage"] = 0,
+    ["Combat"] = 1,
+    ["Magic"] = 2,
+    ["Ranging"] = 3
+}
+function round(p262, p263)
+    return string.format("%." .. (p263 or 0) .. "f", p262)
+end
+local u264 = {
+    ["Defense"] = 0
+}
+u24.Defense.MouseEnter:Connect(function() --[[ Line: 991 ]]
+    --[[
+    Upvalues:
+        [1] = u32
+        [2] = u264
+        [3] = u31
+    --]]
+    local v265 = u32.StatDescriptions.Defense or "\194\191Defense?"
+    local v266 = u264.Defense
+    local v267
+    if v266 >= 0 then
+        v267 = "+" .. round(v266, 2) .. "% " .. v265
+    else
+        v267 = "<font color=\'rgb(255,10,10)\'>" .. round(v266, 2) .. "% " .. v265 .. "</font>"
+    end
+    u31:ToggleHoverTip(true, v267, nil, true)
+end)
+u24.MouseLeave:Connect(function() --[[ Line: 994 ]]
+    --[[
+    Upvalues:
+        [1] = u31
+    --]]
+    u31:ToggleHoverTip(false)
+end)
+local u268 = {}
+local function u306(p269, p270) --[[ Line: 997 ]]
+    --[[
+    Upvalues:
+        [1] = u41
+        [2] = u37
+        [3] = u8
+        [4] = u24
+        [5] = u2
+        [6] = u268
+        [7] = u261
+        [8] = u35
+        [9] = u17
+        [10] = u32
+        [11] = u264
+        [12] = u31
+    --]]
+    local u271 = {
+        ["Defense"] = 0
+    }
+    local v272 = false
+    for v273, v274 in pairs(p270) do
+        v272 = p269[v273] and p269[v273].Name ~= v274.Name and true or v272
+        if v274.Name and (v274.Durability or 1) > 0 then
+            local v275 = u41:InvokeVariable(v274.Name, "EquipmentStats")
+            if v275 then
+                for v276, v278 in pairs(v275) do
+                    if not string.match(v276, "Damage") then
+                        if u41.Effective_Values[v276] then
+                            local v278 = u41.DecodeEffectiveness(v275, v274.Effectiveness, v276, v274.Name)
+                        end
+                        if u271[v276] then
+                            u271[v276] = u271[v276] + v278
+                        else
+                            u271[v276] = v278
+                        end
+                    end
+                end
+            end
+        end
+    end
+    if v272 then
+        local v279 = u271.SprintSpeed
+        local v280 = v279 and 1 + v279 / (v279 + 30) or 1
+        u37.controls._vecmod = v280
+        pcall(function() --[[ Line: 1025 ]]
+            --[[
+            Upvalues:
+                [1] = u8
+                [2] = u37
+            --]]
+            local v281 = u8:WaitForChild("Combat_Controller")
+            if not (v281.Value or v281:GetAttribute("C")) then
+                u37.controls.controlSettings.Move.ApplySprint(v281:GetAttribute("shift"))
+                local v282 = u8:WaitForChild("SprintScript"):FindFirstChild("equipListener")
+                if v282 then
+                    v282:Fire()
+                end
+            end
+        end)
+    end
+    local u283 = {}
+    for _, v284 in pairs(u24:GetChildren()) do
+        if not u271[v284.Name] then
+            if v284.Name == "Defense" then
+                v284.Icon.TextLabel.Text = "      0"
+            elseif v284:IsA("Frame") then
+                table.insert(u283, v284)
+                local v285 = TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+                u2:Create(v284, v285, {
+                    ["Size"] = UDim2.new(0, 0, 1, 0)
+                }):Play()
+                u2:Create(v284.Icon, v285, {
+                    ["ImageTransparency"] = 1
+                }):Play()
+                u2:Create(v284.Icon.TextLabel, v285, {
+                    ["TextTransparency"] = 1,
+                    ["BackgroundTransparency"] = 1
+                }):Play()
+                if v284.Icon:FindFirstChild("Mini") then
+                    u2:Create(v284.Icon.Mini, v285, {
+                        ["ImageTransparency"] = 1
+                    }):Play()
+                end
+            end
+        end
+    end
+    spawn(function() --[[ Line: 1055 ]]
+        --[[
+        Upvalues:
+            [1] = u283
+            [2] = u268
+            [3] = u271
+            [4] = u24
+            [5] = u261
+            [6] = u35
+            [7] = u17
+            [8] = u32
+            [9] = u264
+            [10] = u31
+            [11] = u2
+            [12] = u41
+        --]]
+        if #u283 > 0 then
+            task.wait(0.3)
+        end
+        for _, v286 in pairs(u283) do
+            local v287 = u268[v286.Name]
+            for _, v288 in pairs(v287) do
+                v288:Disconnect()
+            end
+            v286:Destroy()
+        end
+        for u289, v290 in pairs(u271) do
+            local v291 = u24:FindFirstChild(u289)
+            local v292 = v290 * 10
+            local v293 = math.round(v292)
+            local v294 = math.floor(v293) / 10
+            if v291 then
+                v291.Icon.TextLabel.Text = "      " .. tostring(v294)
+            else
+                local v295 = u24.Defense:Clone()
+                v295.Name = u289
+                v295.Size = UDim2.new(0, 0, 1, 0)
+                v295.LayoutOrder = u261[u289] or 1
+                v295.Icon.TextLabel.TextTransparency = 1
+                v295.Icon.TextLabel.BackgroundTransparency = 1
+                v295.Icon.ImageTransparency = 1
+                v295.Icon.TextLabel.Text = "      " .. tostring(v294)
+                local v296 = u35.StatIcons[u289]
+                v295.Icon.Image = v296 or u35.StatIcons.Defense
+                if not v296 then
+                    local v297 = string.split(u289, "Defense")[1]
+                    if u35.StatIcons[v297] then
+                        local v298 = u17.Primitives.Mini:Clone()
+                        v298.Image = u35.StatIcons[v297]
+                        v298.Parent = v295.Icon
+                        v298.Visible = true
+                    end
+                end
+                v295.Parent = u24
+                u268[u289] = { v295.MouseEnter:Connect(function() --[[ Line: 1095 ]]
+                        --[[
+                        Upvalues:
+                            [1] = u289
+                            [2] = u32
+                            [3] = u264
+                            [4] = u31
+                        --]]
+                        local v299 = u289
+                        local v300 = u32.StatDescriptions[v299] or "\194\191" .. v299 .. "?"
+                        local v301 = u264[v299]
+                        local v302
+                        if v301 >= 0 then
+                            v302 = "+" .. round(v301, 2) .. "% " .. v300
+                        else
+                            v302 = "<font color=\'rgb(255,10,10)\'>" .. round(v301, 2) .. "% " .. v300 .. "</font>"
+                        end
+                        u31:ToggleHoverTip(true, v302, nil, true)
+                    end) }
+                local v303 = TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+                u2:Create(v295, v303, {
+                    ["Size"] = UDim2.new(0.24, 0, 1, 0)
+                }):Play()
+                u2:Create(v295.Icon, v303, {
+                    ["ImageTransparency"] = 0
+                }):Play()
+                u2:Create(v295.Icon.TextLabel, TweenInfo.new(0.7), {
+                    ["TextTransparency"] = 0,
+                    ["BackgroundTransparency"] = 0.6
+                }):Play()
+            end
+            u264[u289] = u41.SpecialStatCalcs[u289] and u41.SpecialStatCalcs[u289](v294) * 100 or v294 / (v294 + 30) * 100
+        end
+        local v304 = (#u24:GetChildren() - 1) / 4
+        local v305 = math.floor(v304) + 1
+        u24.UIGridLayout.CellSize = UDim2.new(0.3, 0, 1 / v305, 0)
+        u24.Size = UDim2.new(1, 0, v305 * 0.08, 0)
+    end)
+end
+local u307 = false
+function Spell_Offhand(p308)
+    --[[
+    Upvalues:
+        [1] = u48
+        [2] = u307
+        [3] = u34
+    --]]
+    local v309 = p308.Equipment["Left Hand"]
+    if not (v309 and (v309.PageIndex and v309)) then
+        v309 = nil
+    end
+    local v310
+    if v309 then
+        v310 = u48.Equipment["Left Hand"].Spell ~= v309.Spell
+    else
+        v310 = v309
+    end
+    if v309 and not u307 then
+        u34:Open_Offhand(v309.Spell)
+        u307 = true
+        return
+    elseif v309 or not u307 then
+        if v310 then
+            u34.Update_Offhand(v309.Spell)
+        end
+    else
+        u34:Close_Offhand()
+        u307 = false
+    end
+end
+function RkeyBindDetails(p311)
+    --[[
+    Upvalues:
+        [1] = u27
+        [2] = u2
+    --]]
+    local v312 = {
+        ["BackgroundTransparency"] = (p311.Equipment["Left Hand"].Name or p311.Equipment["Right Hand"].Name) and 0 or 1
+    }
+    u2:Create(u27.Slots["1"].BindDetails.Trim, TweenInfo.new(0.2), v312):Play()
+end
+function HandleInventory(p313)
+    --[[
+    Upvalues:
+        [1] = u306
+        [2] = u48
+        [3] = u45
+        [4] = u44
+        [5] = u42
+    --]]
+    if p313.Equipment then
+        RkeyBindDetails(p313)
+        Spell_Offhand(p313)
+        u306(u48.Equipment, p313.Equipment)
+    end
+    u48 = p313
+    if not u45 then
+        u45 = true
+        CreateEmptySlots()
+        ToggleInventory()
+        ChangeTab("Equipment", "Equipment")
+        u44 = true
+    end
+    if u44 then
+        UpdateInventoryGui()
+    end
+    u42.InvUpdate:Fire()
+end
+local u314 = nil
+local u315 = u26.Details
+u315.Holder.Expand.Bar1.Unlock.Visible = false
+local function u318(p316, p317) --[[ Line: 1176 ]]
+    if p317 >= 1 then
+        return Color3.new(0, 1, 0)
+    elseif p316 then
+        return Color3.new(1, 1, 0)
+    else
+        return Color3.new(0.356863, 0.345098, 0)
+    end
+end
+local function u322(p319, p320, p321) --[[ Line: 1186 ]]
+    if p321 <= p320 then
+        return Color3.new(0, 1, 0)
+    elseif p321 <= p319 then
+        return Color3.new(1, 1, 0)
+    else
+        return Color3.new(0.317, 0.317, 0.317)
+    end
+end
+local u323 = {}
+local u324 = {}
+local u329 = {
+    ["Blueprints"] = function(p325, p326) --[[ Line: 1203 ]]
+        --[[
+        Upvalues:
+            [1] = u41
+        --]]
+        for v327, v328 in pairs(u41.Blueprints[p325] or {}) do
+            if v328.CraftLevel then
+                p326({
+                    ["Level"] = v328.CraftLevel,
+                    ["ToolTip"] = v327
+                })
+            end
+        end
+    end
+}
+function HandleSkills(p330)
+    --[[
+    Upvalues:
+        [1] = u52
+        [2] = u324
+        [3] = u26
+        [4] = u35
+        [5] = u315
+        [6] = u322
+        [7] = u36
+        [8] = u329
+        [9] = u22
+        [10] = u314
+        [11] = u2
+        [12] = u323
+        [13] = u318
+        [14] = u31
+    --]]
+    if p330 ~= nil then
+        u52 = p330
+        local v331 = 0
+        for _, v332 in pairs(u324) do
+            v332:Disconnect()
+        end
+        for u333, u334 in pairs(u52) do
+            if type(u334) == "table" then
+                local u335 = u26.PadList:FindFirstChild(u333) or u26.PadList.Template:Clone()
+                local u336 = u334.Level
+                u335.Level.Text = tostring(u336)
+                u335.LayoutOrder = u35.Skill_Info[u333].Layout or 0
+                u335.IconLabel.Image = u35.Skill_Info[u333].img
+                v331 = v331 + u336
+                local u337 = u315.Holder.Expand
+                local function u341() --[[ Line: 1230 ]]
+                    --[[
+                    Upvalues:
+                        [1] = u315
+                        [2] = u337
+                    --]]
+                    u315.Holder.Expand.Visible = false
+                    for v338 = 1, 4 do
+                        local v339 = u337["Bar" .. tostring(v338)]
+                        for _, v340 in pairs(v339:GetChildren()) do
+                            if v340:IsA("TextLabel") and v340.Visible then
+                                v340:Destroy()
+                            end
+                        end
+                    end
+                end
+                local function u369(p342, u343, u344) --[[ Line: 1240 ]]
+                    --[[
+                    Upvalues:
+                        [1] = u315
+                        [2] = u341
+                        [3] = u337
+                        [4] = u322
+                        [5] = u336
+                        [6] = u36
+                        [7] = u333
+                        [8] = u329
+                    --]]
+                    local v345
+                    if p342 then
+                        local v346 = string.split(p342.Name, "Level Section")[2]
+                        v345 = tonumber(v346) or 0
+                    else
+                        v345 = 0
+                    end
+                    for _, v347 in pairs(u315.Holder:GetChildren()) do
+                        if v347.Name == "Expand" then
+                            v347.LayoutOrder = v345 + 1
+                        elseif v347:IsA("Frame") then
+                            local v348 = string.split(v347.Name, "Level Section")[2]
+                            local v349 = tonumber(v348)
+                            if v347 ~= p342 then
+                                v347.Dropper.Rotation = 90
+                            end
+                            if v349 <= v345 then
+                                v347.LayoutOrder = v349
+                            else
+                                v347.LayoutOrder = v349 + 2
+                            end
+                        end
+                    end
+                    u341()
+                    local u350 = u337.Bar1.Unlock
+                    local function v358(p351) --[[ Line: 1261 ]]
+                        --[[
+                        Upvalues:
+                            [1] = u343
+                            [2] = u344
+                            [3] = u337
+                            [4] = u322
+                            [5] = u336
+                            [6] = u350
+                        --]]
+                        if p351.Level > u343 and u344 >= p351.Level then
+                            local v352 = (p351.Level - u343) / 5
+                            local v353 = math.ceil(v352)
+                            local v354 = math.clamp(v353, 1, 4)
+                            local v355 = u337["Bar" .. tostring(v354)]
+                            local v356 = u322(u336, u343, p351.Level)
+                            local v357 = u350:Clone()
+                            v357.TextColor3 = v356
+                            v357.ImageLabel.ImageColor3 = v356
+                            v357.Text = p351.ToolTip
+                            v357.Parent = v355
+                            v357.LayoutOrder = p351.Level
+                            v357.Visible = true
+                        end
+                    end
+                    local v359 = u36[u333]
+                    if v359 then
+                        for v360, v361 in pairs(v359) do
+                            if typeof(v361) == "string" then
+                                if u329[v360] then
+                                    u329[v360](v361, v358)
+                                end
+                            else
+                                local v362 = v361.Level
+                                if typeof(v362) == "table" then
+                                    for v363, v364 in pairs(v361.Level) do
+                                        local v365 = {
+                                            ["Level"] = v364
+                                        }
+                                        local v366 = string.gsub
+                                        local v367 = v361.ToolTip
+                                        local v368 = v361.RewardValue[v363]
+                                        v365.ToolTip = v366(v367, "#", (tostring(v368)))
+                                        v358(v365)
+                                    end
+                                else
+                                    v358(v361)
+                                end
+                            end
+                        end
+                    end
+                    u315.Holder.Expand.Visible = p342 ~= nil
+                end
+                local function v401() --[[ Line: 1300 ]]
+                    --[[
+                    Upvalues:
+                        [1] = u22
+                        [2] = u341
+                        [3] = u314
+                        [4] = u2
+                        [5] = u335
+                        [6] = u323
+                        [7] = u315
+                        [8] = u336
+                        [9] = u369
+                        [10] = u318
+                        [11] = u334
+                        [12] = u333
+                        [13] = u35
+                    --]]
+                    if not u22.Skills.Visible then
+                        return
+                    end
+                    u341()
+                    local v370 = TweenInfo.new(0.6, Enum.EasingStyle.Circular, Enum.EasingDirection.InOut)
+                    if u314 then
+                        u2:Create(u314, v370, {
+                            ["BackgroundColor3"] = Color3.new(0.603922, 0.458824, 0.317647)
+                        }):Play()
+                        u2:Create(u314.Detail, v370, {
+                            ["BackgroundColor3"] = Color3.new(0.156863, 0.12549, 0.0784314)
+                        }):Play()
+                        u2:Create(u314.Detail.FrontFade, v370, {
+                            ["BackgroundColor3"] = Color3.new(0.309804, 0.239216, 0.14902)
+                        }):Play()
+                        u2:Create(u314.Level, v370, {
+                            ["TextStrokeColor3"] = Color3.new(0, 0, 0)
+                        }):Play()
+                    end
+                    u314 = u335
+                    u2:Create(u314, v370, {
+                        ["BackgroundColor3"] = Color3.new(1, 0.976471, 0.721569)
+                    }):Play()
+                    u2:Create(u314.Detail, v370, {
+                        ["BackgroundColor3"] = Color3.new(1, 0.65098, 0.227451)
+                    }):Play()
+                    u2:Create(u314.Detail.FrontFade, v370, {
+                        ["BackgroundColor3"] = Color3.new(1, 0.937255, 0.466667)
+                    }):Play()
+                    u2:Create(u314.Level, v370, {
+                        ["TextStrokeColor3"] = Color3.new(1, 0.627451, 0)
+                    }):Play()
+                    local v371 = 0
+                    local v372 = false
+                    local v373 = false
+                    for _, v374 in pairs(u323) do
+                        v374:Disconnect()
+                    end
+                    u323 = {}
+                    for v375 = 1, 20 do
+                        local v376 = v375 / 4
+                        local v377 = math.ceil(v376)
+                        local v378 = v377 == 0 and 1 or v377
+                        local u379 = u315.Holder:FindFirstChild("Level Section" .. tostring(v378))
+                        local v380 = v375 - (v378 - 1) * 5
+                        if v378 > 1 then
+                            v380 = v380 + (v378 - 1)
+                        end
+                        local v381 = v378 == 5
+                        local v382 = u379:FindFirstChild("Bar" .. tostring(v380))
+                        local u383 = (v375 - 1) * 5
+                        local u384 = not v381 and v375 * 5 or v375 * 5 - 1
+                        local v385 = u384 <= u336 and 1 or (u336 - u383) / (u384 - u383)
+                        local v386 = u336 < u383 and 0 or v385
+                        if v371 == v378 then
+                            v378 = v371
+                        else
+                            v373 = false
+                            u379.Dropper.Rotation = 90
+                            local u387 = false
+                            local function v388() --[[ Line: 1348 ]]
+                                --[[
+                                Upvalues:
+                                    [1] = u387
+                                    [2] = u379
+                                    [3] = u369
+                                    [4] = u383
+                                    [5] = u384
+                                    [6] = u341
+                                --]]
+                                u387 = u379.Dropper.Rotation == 90
+                                u379.Dropper.Rotation = u387 and 180 or 90
+                                if u387 then
+                                    u369(u379, u383, u384 + 15)
+                                else
+                                    u341()
+                                end
+                            end
+                            local v389 = u323
+                            local v390 = u379.Dropper.Activated
+                            table.insert(v389, v390:Connect(v388))
+                            if u383 < u336 and u336 <= u384 + 15 then
+                                if u379.Dropper.Rotation == 90 then
+                                    u387 = true
+                                else
+                                    u387 = false
+                                end
+                                u379.Dropper.Rotation = u387 and 180 or 90
+                                if u387 then
+                                    u369(u379, u383, u384 + 15)
+                                else
+                                    u341()
+                                end
+                            end
+                        end
+                        v382.Fill.Size = UDim2.new(v386, 0, 1, 0)
+                        u379.Rank.ImageLabel.Image = "rbxassetid://8852622356"
+                        u379.Rank.ImageLabel.ImageColor3 = Color3.new(1, 1, 0)
+                        u379.Rank.ImageLabel.Visible = true
+                        u379.Rank.TextTransparency = 0
+                        v373 = v386 > 0 and not v373 and true or v373
+                        if v380 == 4 then
+                            u379.Title.TextColor3 = u318(v373, v386)
+                            if v386 == 1 then
+                                if v381 then
+                                    u379.Rank.TextColor3 = Color3.new(0, 1, 0)
+                                    u379.Rank.ImageLabel.Visible = false
+                                    local v391 = u336
+                                    u379.Rank.Text = tostring(v391) .. "/" .. tostring(u384)
+                                else
+                                    u379.Rank.TextTransparency = 1
+                                    u379.Rank.ImageLabel.Image = "rbxassetid://8492269297"
+                                    u379.Rank.ImageLabel.ImageColor3 = Color3.new(0, 1, 0)
+                                    u379.Rank.TextColor3 = Color3.new(1, 1, 0)
+                                end
+                            elseif v372 then
+                                u379.Rank.TextTransparency = 1
+                            else
+                                u379.Rank.ImageLabel.Visible = false
+                                local v392 = u336
+                                u379.Rank.Text = tostring(v392) .. "/" .. tostring(u384)
+                                v372 = true
+                            end
+                        elseif v380 == 1 then
+                            u379.Dropper.ImageColor3 = v386 >= 1 and Color3.new(0, 1, 0) or Color3.new(1, 1, 1)
+                        end
+                        v382.Fill.BackgroundColor3 = v386 >= 1 and Color3.new(0, 1, 0) or Color3.new(1, 1, 0)
+                        v371 = v378
+                    end
+                    local v393 = ReplicatedMulti.ReturnXPgoal(u336 - 1)
+                    local v394 = ReplicatedMulti.ReturnXPgoal(u336) - v393
+                    local v395 = u334.Xp - v393
+                    local v396 = v395 / v394
+                    local _ = u336 / 99
+                    local v397 = v396 < 0 and 0 or v396
+                    u315.ShortXP.CurrentShort.Size = UDim2.new(v397, 0, 1, 0)
+                    u315.TitleBar.TabLable.Text = u333:upper()
+                    u315.TitleBar.Icon.Image = u35.Skill_Info[u333].img
+                    u315.TitleBar.LearnTip.Text = u35.Skill_Info[u333].tip
+                    local v398 = u315.ShortXP.XpLabel
+                    if u336 == 99 then
+                        local v399 = u334.Xp
+                        v400 = tostring(v399) .. "xp"
+                        if v400 then
+                            ::l63::
+                            v398.Text = v400
+                            return
+                        end
+                    end
+                    local v400 = tostring(v395) .. "/" .. tostring(v394) .. "xp"
+                    goto l63
+                end
+                local v402 = u324
+                local v403 = u335.Activated
+                table.insert(v402, v403:Connect(v401))
+                local u404 = nil
+                local v405 = u324
+                local v406 = u335.Detail.FrontFade.MouseEnter
+                local function v411() --[[ Line: 1422 ]]
+                    --[[
+                    Upvalues:
+                        [1] = u404
+                        [2] = u335
+                        [3] = u31
+                        [4] = u333
+                        [5] = u334
+                        [6] = u2
+                    --]]
+                    u404 = u335
+                    local v407 = u31
+                    local v408 = u333
+                    local v409 = u334.Xp
+                    v407:ToggleHoverTip(true, v408 .. ": " .. tostring(v409) .. " xp")
+                    local v410 = math.random(1, 2) == 1 and 2 or -2
+                    u2:Create(u335.IconLabel, TweenInfo.new(0.1), {
+                        ["Size"] = UDim2.new(0.98, 0, 0.98, 0),
+                        ["Rotation"] = v410
+                    }):Play()
+                end
+                table.insert(v405, v406:Connect(v411))
+                local v412 = u324
+                local v413 = u335.Detail.FrontFade.MouseLeave
+                local function v414() --[[ Line: 1429 ]]
+                    --[[
+                    Upvalues:
+                        [1] = u2
+                        [2] = u335
+                        [3] = u404
+                        [4] = u31
+                    --]]
+                    u2:Create(u335.IconLabel, TweenInfo.new(0.1), {
+                        ["Rotation"] = 0,
+                        ["Size"] = UDim2.new(0.85, 0, 0.85, 0)
+                    }):Play()
+                    if u404 == u335 then
+                        u31:ToggleHoverTip(false)
+                    end
+                end
+                table.insert(v412, v413:Connect(v414))
+                if u314 == u335 then
+                    v401()
+                elseif u314 == nil then
+                    v401()
+                end
+                u335.Name = u333
+                u335.Parent = u26.PadList
+                u335.Visible = true
+            end
+        end
+        u315.Visible = true
+        u26.TotalFrame.disp.Text = "Total Level: " .. tostring(v331)
+    end
+end
+u31.docked = {
+    ["Left"] = nil,
+    ["Right"] = nil
+}
+function CheckCursor()
+    --[[
+    Upvalues:
+        [1] = u17
+        [2] = u33
+    --]]
+    for _, v415 in pairs(u17.MidFrame:GetChildren()) do
+        if v415:GetAttribute("IsWindow") and v415.Visible then
+            u33:LockCursor(false)
+            return
+        end
+    end
+    u33:LockCursor(true)
+end
+function script.LockCursor.OnInvoke(...) --[[ Line: 1469 ]]
+    --[[
+    Upvalues:
+        [1] = u33
+    --]]
+    u33:LockCursor(...)
+end
+v1:BindToRenderStep("MouseLock", Enum.RenderPriority.Camera.Value + 1, function() --[[ Line: 1471 ]]
+    --[[
+    Upvalues:
+        [1] = u3
+        [2] = u33
+    --]]
+    if u3.MouseIconEnabled then
+        u33:HandleMouseMove()
+    else
+        u3.MouseBehavior = Enum.MouseBehavior.LockCenter
+    end
+end)
+local u416 = nil
+local function u424(p417, p418) --[[ Line: 1492 ]]
+    --[[
+    Upvalues:
+        [1] = u19
+        [2] = u416
+        [3] = u8
+        [4] = u17
+        [5] = u42
+        [6] = u46
+        [7] = u31
+        [8] = u51
+    --]]
+    local v419 = p417 == Enum.UserInputState.Begin
+    local v420 = false
+    if u19.Enabled and v419 then
+        if u416.Decide == nil then
+            u416.Decide = false
+        else
+            v420 = true
+        end
+    end
+    local v421 = script:GetAttribute("MapFullScreen")
+    local v422 = not u8 or (not u8:FindFirstChild("Humanoid") or u8.Humanoid.Health < 1)
+    local v423 = v420 or (v422 or (v421 or (script:GetAttribute("EditingBinds") or u17.Wheel.Visible)))
+    if v421 then
+        u42.ToggleFullScreen()
+    end
+    if not u46 and v419 then
+        if u31.Is_Inv_Open() then
+            if not v422 and p418 then
+                p418()
+            end
+            return false
+        end
+        if not v423 then
+            if u51 then
+                u51.Start()
+            end
+            return true
+        end
+    end
+end
+function ToggleInventory(_, p425)
+    --[[
+    Upvalues:
+        [1] = u424
+        [2] = u29
+        [3] = u51
+    --]]
+    local v426 = u424(p425, function() --[[ Line: 1523 ]]
+        CheckCursor()
+    end)
+    if v426 then
+        ChangeTab("Inventory", "Backpack")
+        ChangeTab("Equipment", "Equipment")
+        u29:Fire("Inventory", "Equipment")
+    elseif v426 == false then
+        if u51 then
+            u51.End()
+        end
+        u29:Fire()
+    end
+end
+function OpenJournal(_, p427)
+    --[[
+    Upvalues:
+        [1] = u50
+        [2] = u29
+        [3] = u424
+    --]]
+    if p427 ~= Enum.UserInputState.Cancel and p427 ~= Enum.UserInputState.End then
+        if script:GetAttribute("InventoryOpen") and u50 == "Quest" then
+            return u29:Fire()
+        end
+        ChangeTab("Inventory", "Quest")
+        ChangeTab("Equipment", "QuestList")
+        if u424(p427) then
+            u29:Fire("Inventory", "Equipment")
+        end
+    end
+end
+local function u436(u428, p429, u430, u431, p432) --[[ Line: 1551 ]]
+    --[[
+    Upvalues:
+        [1] = u46
+        [2] = u2
+    --]]
+    u46 = true
+    local v433 = typeof(p429) ~= "table" and { p429, 0 } or p429
+    local v434 = u428.Position.Y.Scale
+    local u435 = u2:Create(u428, TweenInfo.new(0.3, Enum.EasingStyle.Circular, p432 or Enum.EasingDirection.InOut), {
+        ["Position"] = UDim2.new(v433[1], v433[2], v434, 0)
+    })
+    spawn(function() --[[ Line: 1560 ]]
+        --[[
+        Upvalues:
+            [1] = u435
+            [2] = u431
+            [3] = u428
+            [4] = u430
+            [5] = u46
+        --]]
+        u435:Play()
+        if u431 then
+            u435.Completed:Wait()
+        end
+        u428.Visible = u430
+        u46 = false
+    end)
+end
+tick()
+function ToggleWindows(...)
+    --[[
+    Upvalues:
+        [1] = u46
+        [2] = u13
+        [3] = u6
+        [4] = u23
+        [5] = u22
+        [6] = u28
+        [7] = u39
+        [8] = u31
+        [9] = u18
+        [10] = u8
+        [11] = u436
+        [12] = u33
+        [13] = u32
+        [14] = u9
+    --]]
+    if not u46 then
+        local v437 = ... == "Binds"
+        if #{ ... } > 0 and not v437 then
+            if not script:GetAttribute("Screen") then
+                u13.UI.InvOPEN:Play()
+                u6:BindAction("RemoveAtk", function() --[[ Line: 1580 ]] end, false, Enum.UserInputType.MouseButton1, Enum.KeyCode.ButtonR1)
+                u23.Craft.LocalScript.ClearTextonFocus:Fire()
+                if u22.Skills.Visible then
+                    u28.GetServerData:FireServer("Skills")
+                end
+                if u39:GetAttribute("Reading") then
+                    u39.CloseBook:Fire(true)
+                end
+                local v438 = { ... }
+                u31:HidePins(v438[1] ~= "QuestBoard")
+                for _, v439 in pairs(v438) do
+                    local v440 = u18:FindFirstChild(v439)
+                    if v439 == "Inventory" then
+                        u8.Combat_Controller:SetAttribute("Swapping", true)
+                    elseif v440:GetAttribute("Solo") then
+                        CloseAllWindows()
+                        if script:GetAttribute("InventoryOpen") then
+                            task.wait(0.2)
+                        end
+                    end
+                    script:SetAttribute("InventoryOpen", true)
+                    if v440 then
+                        local v441 = v440.AnchorPoint.X > 0 and "Right" or "Left"
+                        local v442 = u31.docked[v441]
+                        local v443, v444
+                        if v441 == "Right" then
+                            v443 = 1
+                            v444 = 1.3
+                        else
+                            v443 = 0
+                            v444 = -1
+                        end
+                        if v442 and v442 ~= v440 then
+                            u436(v442, v444, false, false)
+                            u31.docked[v441] = nil
+                        end
+                        u436(v440, { v443, v441 == "Left" and 20 or -20 }, true)
+                        u31.docked[v441] = v440
+                        u33:LockCursor(false)
+                    end
+                end
+                u31.HideLeftStats(true)
+                u28.SwitchViews:FireServer(...)
+            end
+        end
+        u6:UnbindAction("RemoveAtk")
+        if CloseAllWindows() then
+            u13.UI.InvCLOSE:Play()
+        end
+        u31.hoveringSlot = nil
+        u31.docked = {}
+        u31:ToggleHoverTip(false, nil, nil, nil, true)
+        u32.DisableHoverMenu(u32.InfoOpen)
+        if not v437 and (not script:GetAttribute("Screen") and (u8.Humanoid.Health > 0 and not u9:GetAttribute("InMenuScreen"))) then
+            u33:LockCursor(true)
+        end
+        script:SetAttribute("InventoryOpen", false)
+        u28.SwitchViews:FireServer()
+        u31:HidePins(false)
+        spawn(function() --[[ Line: 1641 ]]
+            --[[
+            Upvalues:
+                [1] = u8
+            --]]
+            while script:GetAttribute("EditingBinds") do
+                task.wait(0.33)
+            end
+            u8.Combat_Controller:SetAttribute("Swapping", false)
+        end)
+    end
+end
+function CloseAllWindows()
+    --[[
+    Upvalues:
+        [1] = u17
+        [2] = u43
+        [3] = u436
+        [4] = u31
+    --]]
+    local v445 = false
+    for _, v446 in pairs(u17.MidFrame:GetChildren()) do
+        if v446:GetAttribute("IsWindow") and (v446.Visible or u43) then
+            u436(v446, (v446.AnchorPoint.X > 0 and "Right" or "Left") == "Right" and 1.3 or -1, false, true)
+            v445 = true
+        end
+    end
+    u31.HideLeftStats(false)
+    return v445
+end
+local u447 = require(u23.Tabs.ViewChanger)
+function ChangeTab(p448, p449)
+    --[[
+    Upvalues:
+        [1] = u22
+        [2] = u23
+        [3] = u447
+    --]]
+    if p448 == "Inventory" then
+        local v450 = u22:FindFirstChild(p449)
+        assert(v450, "Parent frame does not exist")
+        local v451 = u22.Tabs:FindFirstChild(p449)
+        ChangeInvTab(v450, v451)
+    elseif p448 == "Equipment" then
+        local v452 = u23:FindFirstChild(p449)
+        assert(v452, "Parent frame does not exist")
+        local v453 = u23.Tabs:FindFirstChild(p449)
+        u447.ChangeTab(v452, v453)
+    end
+end
+function ShowTabError(p454)
+    --[[
+    Upvalues:
+        [1] = u2
+    --]]
+    p454.ImageLabel.ImageColor3 = Color3.new(1, 1, 1)
+    u2:Create(p454.ImageLabel, TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, 0, true), {
+        ["ImageColor3"] = Color3.new(1, 0, 0)
+    }):Play()
+end
+function ChangeInvTab(p455, p456)
+    --[[
+    Upvalues:
+        [1] = u50
+        [2] = u17
+        [3] = u25
+        [4] = u28
+        [5] = u13
+        [6] = u2
+        [7] = u53
+        [8] = u51
+        [9] = u22
+    --]]
+    if p456.Name ~= u50 then
+        if p456.Name == "Skills" then
+            if u17.MidFrame.Bank.Visible or u25.Visible and u25.Anvil.Visible then
+                return ShowTabError(p456)
+            end
+            u28.GetServerData:FireServer("Skills")
+        end
+        u50 = p456.Name
+        script:SetAttribute("CurrentInvTab", p456.Name)
+        local v457 = u13.UI
+        local v458 = math.random
+        v457["TabSwitch" .. tostring(v458(1, 4))]:Play()
+        p455.Visible = true
+        p456.BackgroundTransparency = 0.3
+        u2:Create(p456.ImageLabel, TweenInfo.new(0), {
+            ["ImageTransparency"] = 0
+        }):Play()
+        local v459 = u50 or (script:GetAttribute("CurrentInvTab") or "Backpack")
+        if u53[v459] and u53[v459] ~= 0 then
+            u28.ReadAlert:FireServer(v459)
+        end
+        if u51 then
+            u51.End()
+            u51 = nil
+        end
+        local v460 = p455:FindFirstChildWhichIsA("ModuleScript")
+        if v460 then
+            u51 = require(v460)
+            u51.Start()
+        end
+        for _, v461 in pairs(u22:GetChildren()) do
+            if (v461:IsA("Frame") or v461:IsA("ScrollingFrame")) and (v461 ~= p455 and v461.Name ~= "Tabs") then
+                local v462 = u22.Tabs:FindFirstChild(v461.Name)
+                v462.BackgroundTransparency = 0.5
+                u2:Create(v462.ImageLabel, TweenInfo.new(0), {
+                    ["ImageTransparency"] = 0.5
+                }):Play()
+                v461.Visible = false
+            end
+        end
+    end
+end
+local u463 = u49
+for _, u464 in pairs(u22.Tabs:GetChildren()) do
+    if u464:IsA("TextButton") then
+        local u465 = u22:WaitForChild(u464.Name)
+        u464.MouseButton1Click:Connect(function() --[[ Line: 1734 ]]
+            --[[
+            Upvalues:
+                [1] = u465
+                [2] = u464
+            --]]
+            ChangeInvTab(u465, u464)
+        end)
+        local u466 = u464:WaitForChild("ImageLabel")
+        local u467 = TweenInfo.new(0.1)
+        u464.MouseEnter:Connect(function() --[[ Line: 1739 ]]
+            --[[
+            Upvalues:
+                [1] = u2
+                [2] = u466
+                [3] = u467
+            --]]
+            u2:Create(u466, u467, {
+                ["Position"] = UDim2.new(0.5, 0, 0.35, 0)
+            }):Play()
+        end)
+        u464.MouseLeave:Connect(function() --[[ Line: 1742 ]]
+            --[[
+            Upvalues:
+                [1] = u2
+                [2] = u466
+                [3] = u467
+            --]]
+            u2:Create(u466, u467, {
+                ["Position"] = UDim2.new(0.5, 0, 0.4, 0)
+            }):Play()
+        end)
+    end
+end
+local u468 = require(u23.Craft.StationScroll:WaitForChild("ResizeMod"))
+for _, u469 in pairs(u23.Craft.StationScroll:GetChildren()) do
+    local u470 = u469:FindFirstChild("DropFrame")
+    if u470 then
+        u470.DropImage.Activated:Connect(function() --[[ Line: 1753 ]]
+            --[[
+            Upvalues:
+                [1] = u469
+                [2] = u470
+            --]]
+            OpenCraftList(u469)
+            local v471 = u469:GetAttribute("Open")
+            if v471 then
+                u470.DropImage.Image = "rbxassetid://7406408200"
+            else
+                u470.DropImage.Image = "rbxassetid://7406408321"
+            end
+            u469:SetAttribute("Open", not v471)
+        end)
+    end
+end
+local u472 = nil
+local function u484(p473, p474, p475, p476) --[[ Line: 1767 ]]
+    --[[
+    Upvalues:
+        [1] = u41
+        [2] = u20
+        [3] = u38
+        [4] = u472
+    --]]
+    p476.Size = UDim2.new(1, 0, 4, 0)
+    p476.DropFrame.Size = UDim2.new(0.95, 0, 0.3, 0)
+    local v477 = u41:InvokeVariable(p474, "Rarity")
+    local v478 = u20.Crafting.Blueprint:Clone()
+    v478.LayoutOrder = v477 or 0
+    local v479 = p473.Mats
+    p475:lower()
+    for _, v480 in pairs(v479) do
+        local v481 = v478.Material:Clone()
+        for v482, v483 in pairs(u41:InvokeVars(v480.Name, { "ImageId", "Rarity" })) do
+            v480[v482] = v483 or 1
+        end
+        u38:PopulateEmptySlot(v481.ItemFrame, v480)
+        if v481:FindFirstChild("ItemName") then
+            v481.ItemName.Text = v480.Name
+        end
+        v481.Visible = true
+        v481.Parent = v478
+        v480.UIRef = v481
+    end
+    v478.Parent = p476
+    v478.Visible = true
+    u472 = v478
+end
+local function u490(u485, u486, u487) --[[ Line: 1807 ]]
+    --[[
+    Upvalues:
+        [1] = u20
+        [2] = u23
+        [3] = u472
+        [4] = u484
+        [5] = u468
+    --]]
+    local u488 = u20.Crafting.NameFrame:Clone()
+    u488.DropFrame.DropTitle.Text = u486
+    u488.Name = u486
+    u488.Parent = u23.Craft.StationScroll[u487]
+    u488.Visible = true
+    local v489 = u488.DropFrame.DropTitle.MouseEnter:Connect(function() --[[ Line: 1815 ]]
+        --[[
+        Upvalues:
+            [1] = u472
+            [2] = u484
+            [3] = u485
+            [4] = u486
+            [5] = u487
+            [6] = u488
+            [7] = u468
+        --]]
+        if u472 then
+            pcall(function() --[[ Line: 1799 ]]
+                --[[
+                Upvalues:
+                    [1] = u472
+                --]]
+                u472.Parent.Size = UDim2.new(1, 0, 1, 0)
+                u472.Parent.DropFrame.Size = UDim2.new(0.95, 0, 0.9, 0)
+                u472:Destroy()
+            end)
+            u472 = nil
+        end
+        u484(u485, u486, u487, u488)
+        u468.RecalCraftList()
+    end)
+    u468.UiCon[u486] = v489
+end
+function OpenCraftList(p491, p492)
+    --[[
+    Upvalues:
+        [1] = u41
+        [2] = u490
+        [3] = u23
+        [4] = u468
+    --]]
+    if p491 then
+        for v493, v494 in pairs(u41.Blueprints[p491.Name]) do
+            local v495
+            if p492 == nil then
+                v495 = not p491:GetAttribute("Open")
+            else
+                v495 = p492
+            end
+            if v495 then
+                u490(v494, v493, p491.Name)
+            else
+                local v496 = p491.Name
+                local v497 = u23.Craft.StationScroll[v496]:FindFirstChild(v493)
+                if v497 then
+                    v497:Destroy()
+                    u468.UiCon[v493]:Disconnect()
+                    u468.UiCon[v493] = nil
+                end
+            end
+        end
+        if p492 == nil then
+            u468.RecalCraftList()
+            return
+        else
+            p491:SetAttribute("Open", p492)
+            local v498 = p491:FindFirstChild("DropFrame")
+            if p492 then
+                v498.DropImage.Image = "rbxassetid://7406408321"
+            else
+                v498.DropImage.Image = "rbxassetid://7406408200"
+            end
+        end
+    else
+        return
+    end
+end
+function CloseAllLists()
+    --[[
+    Upvalues:
+        [1] = u472
+        [2] = u41
+        [3] = u23
+        [4] = u468
+    --]]
+    if u472 then
+        pcall(function() --[[ Line: 1799 ]]
+            --[[
+            Upvalues:
+                [1] = u472
+            --]]
+            u472.Parent.Size = UDim2.new(1, 0, 1, 0)
+            u472.Parent.DropFrame.Size = UDim2.new(0.95, 0, 0.9, 0)
+            u472:Destroy()
+        end)
+        u472 = nil
+    end
+    for v499, _ in pairs(u41.Blueprints) do
+        OpenCraftList(u23.Craft.StationScroll:FindFirstChild(v499), false)
+    end
+    u468.RecalCraftList()
+end
+u468.CloseAllLists = CloseAllLists
+function CraftSearch(p500)
+    --[[
+    Upvalues:
+        [1] = u23
+        [2] = u41
+        [3] = u490
+        [4] = u468
+    --]]
+    local v501 = p500:lower()
+    for _, v502 in pairs(u23.Craft.StationScroll:GetChildren()) do
+        if v502:IsA("Frame") then
+            local v503 = 0
+            for v504, v505 in pairs(u41.Blueprints[v502.Name]) do
+                v502:FindFirstChild(v504)
+                if string.match(v504:lower(), v501) then
+                    v503 = v503 + 1
+                    if not v502:FindFirstChild(v504) then
+                        u490(v505, v504, v502.Name)
+                    end
+                else
+                    local v506 = v502.Name
+                    local v507 = u23.Craft.StationScroll[v506]:FindFirstChild(v504)
+                    if v507 then
+                        v507:Destroy()
+                        u468.UiCon[v504]:Disconnect()
+                        u468.UiCon[v504] = nil
+                    end
+                end
+            end
+            local v508 = v502:FindFirstChild("DropFrame")
+            if v503 == 0 then
+                v502:SetAttribute("Open", false)
+                v508.DropImage.Image = "rbxassetid://7406408200"
+            else
+                v502:SetAttribute("Open", true)
+                v508.DropImage.Image = "rbxassetid://7406408321"
+            end
+        end
+    end
+    u468.RecalCraftList()
+end
+u468.CraftSearch = CraftSearch
+local function v525(p509, u510) --[[ Line: 1899 ]]
+    --[[
+    Upvalues:
+        [1] = u31
+        [2] = u25
+        [3] = u40
+        [4] = u38
+    --]]
+    local function v522(p511, p512) --[[ Line: 1900 ]]
+        --[[
+        Upvalues:
+            [1] = u31
+            [2] = u25
+            [3] = u510
+            [4] = u40
+            [5] = u38
+        --]]
+        if u31.AtProcessor == p511 and (u25.Visible or u510) then
+            local v513 = string.split(p511, "-")[1]
+            local v514 = u25[v513].Frame
+            local v515 = {}
+            for v516, v517 in pairs(p512) do
+                if v516 == "data" then
+                    u40.HandleProcessorUI(v513, p512)
+                else
+                    v515[v516] = v517
+                end
+            end
+            u38:PopulateSlots(v514, v515)
+            for _, v518 in pairs(v514.Slots:GetChildren()) do
+                if v518.Name ~= "FinishedSlot" and v518:FindFirstChild("ItemFrame") then
+                    v518.ItemFrame.Rarity.Border.ImageColor3 = Color3.new(1, 1, 1)
+                    v518.ItemFrame.Rarity.Border.Visible = true
+                end
+            end
+            for v519, v520 in pairs(v515) do
+                local v521 = v514.Slots[v519]
+                if v521 then
+                    if v521:FindFirstChild("BackgroundIcon") then
+                        v521.BackgroundIcon.Visible = not v520.Name
+                    end
+                    u38.ApplyRarityVisual(v521, v520)
+                end
+            end
+        end
+    end
+    if u510 then
+        p509 = u31.SessionProcessors
+    end
+    for v523, v524 in pairs(p509) do
+        if not u510 then
+            u31.SessionProcessors[v523] = v524
+        end
+        v522(v523, v524)
+    end
+end
+local u526 = u9.PlayerScripts.CoreClient:WaitForChild("Ambience"):WaitForChild("WorldChanges")
+local u527 = true
+local u528 = game:GetService("ContentProvider")
+local function u533(_) --[[ Line: 1955 ]]
+    --[[
+    Upvalues:
+        [1] = u527
+        [2] = u17
+        [3] = u22
+        [4] = u528
+    --]]
+    u527 = false
+    local u529 = u17.Primitives.Slot.ItemFrame.Rarity:GetChildren()
+    local v530 = u22.Backpack.Slots:GetChildren()
+    for _, v531 in pairs(v530) do
+        if v531:GetAttribute("Populated") and v531.ItemFrame.ItemImage.Image ~= "" then
+            local v532 = v531.ItemFrame.ItemImage
+            table.insert(u529, v532)
+        end
+    end
+    task.spawn(function() --[[ Line: 1966 ]]
+        --[[
+        Upvalues:
+            [1] = u528
+            [2] = u529
+        --]]
+        u528:PreloadAsync(u529)
+    end)
+end
+local u539 = {
+    ["Inventory"] = function(p534) --[[ Name: Inventory, Line 1970 ]]
+        --[[
+        Upvalues:
+            [1] = u527
+            [2] = u533
+        --]]
+        HandleInventory(p534.Inv)
+        if u527 then
+            u533(p534.Inv.Backpack)
+        end
+    end,
+    ["InventoryAlerts"] = function(p535) --[[ Name: InventoryAlerts, Line 1974 ]]
+        HandleInventoryAlerts(p535)
+    end,
+    ["Skills"] = function(p536) --[[ Name: Skills, Line 1975 ]]
+        HandleSkills(p536)
+    end,
+    ["Hotbar"] = function(p537) --[[ Name: Hotbar, Line 1976 ]]
+        --[[
+        Upvalues:
+            [1] = u34
+            [2] = u463
+        --]]
+        u34:UpdateItems(p537)
+        u463 = p537
+    end,
+    ["WorldChanges"] = function(p538) --[[ Name: HandleWorldChange, Line 1949 ]]
+        --[[
+        Upvalues:
+            [1] = u526
+        --]]
+        u526:Fire(p538)
+    end,
+    ["PublicProcesses"] = v525,
+    ["PrivateProcesses"] = v525
+}
+function ReceiveData(p540)
+    --[[
+    Upvalues:
+        [1] = u539
+    --]]
+    for v541, v542 in pairs(p540) do
+        if u539[v541] then
+            u539[v541](v542)
+        else
+            warn("No Data Handler For:", v541)
+        end
+    end
+end
+u9.CharacterAdded:Connect(function(p543) --[[ Line: 2018 ]]
+    --[[
+    Upvalues:
+        [1] = u8
+    --]]
+    u8 = p543
+end)
+u31.SwapSlotVisual = u38.SwapSlotVisual
+u33:BindAction("Inventory", ToggleInventory)
+u33:BindAction("Journal", OpenJournal)
+u33:BindAction("Next Spell", OnNextSpell)
+u28.GetServerData.OnClientEvent:Connect(ReceiveData)
+u28.SendNotification.OnClientEvent:Connect(ReceiveNotification)
+script.SendNotification.Event:Connect(ReceiveNotification)
+u29.Event:Connect(ToggleWindows)
+script.ChangeTab.Event:Connect(ChangeTab)
+script.GetLocalData.OnInvoke = GetLocalData
+script.GetSkillData.OnInvoke = GetSkillData
+script.ProcessUpdate.Event:Connect(v525)
+CloseAllWindows()
+u43 = false
+script:SetAttribute("Loaded", true)
+u8 = u9.Character or u9.CharacterAdded:Wait()
+u416 = require(v11:WaitForChild("LockPickGen"))
+u28.GetServerData:FireServer("WorldChanges")
