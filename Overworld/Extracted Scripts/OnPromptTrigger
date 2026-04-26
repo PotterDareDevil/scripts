@@ -1,0 +1,139 @@
+local v1 = game:GetService("ReplicatedStorage").RepStore_CORE
+local u2 = game:GetService("ReplicatedFirst").RepFirst_CORE
+local v3 = game:GetService("ProximityPromptService")
+local u4 = game:GetService("SoundService").Sound_CORE:WaitForChild("Doors")
+local u5 = game:GetService("TweenService")
+local v6 = game:GetService("Players")
+local u7 = script.Parent.InventoryManager
+require(u7.SlotUtil)
+local u8 = v1.Events:WaitForChild("LeaveDungeon")
+local v9 = v6.LocalPlayer
+local v10 = v9.Character or v9.CharacterAdded:Wait()
+v10:WaitForChild("Combat_Controller")
+local v11 = v10:WaitForChild("Humanoid")
+local u12 = false
+local _ = v1.ClientEvents
+local _ = u7.SendNotification
+local v13 = v1.OtherAnims.Interact
+local u14 = v11:WaitForChild("Animator"):LoadAnimation(v13)
+u14.Priority = Enum.AnimationPriority.Action
+local u15 = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+local u16 = TweenInfo.new(0.01, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+local u17 = {}
+local function u19(p18) --[[ Line: 29 ]]
+    --[[
+    Upvalues:
+        [1] = u4
+        [2] = u2
+    --]]
+    if p18 then
+        if p18 == "DOOR" then
+            u4.ClassicDoorOpen:Play()
+            u2["Fade-Loading"]:SetAttribute("ExitSound", "DOOR")
+        end
+        if p18 == "GATE" then
+            u4["Gate Open"]:Play()
+            u2["Fade-Loading"]:SetAttribute("ExitSound", "GATE")
+        end
+    end
+end
+local function v41(u20, _) --[[ Line: 43 ]]
+    --[[
+    Upvalues:
+        [1] = u14
+        [2] = u17
+        [3] = u5
+        [4] = u15
+        [5] = u16
+        [6] = u19
+        [7] = u7
+        [8] = u12
+        [9] = u8
+    --]]
+    local function v40() --[[ Line: 45 ]]
+        --[[
+        Upvalues:
+            [1] = u14
+            [2] = u17
+            [3] = u5
+            [4] = u15
+            [5] = u16
+            [6] = u20
+        --]]
+        u14:Play()
+        local v21 = game.Players.LocalPlayer.PlayerGui.ProximityPrompts:FindFirstChild("HandPrompt")
+        if v21 then
+            local v22 = u17
+            local v23 = u5
+            local v24 = v21.Frame
+            local v25 = u15
+            local v26 = {
+                ["BackgroundTransparency"] = 1,
+                ["Visible"] = false,
+                ["Size"] = UDim2.fromScale(0, 0.8)
+            }
+            table.insert(v22, v23:Create(v24, v25, v26))
+            local v27 = u17
+            local v28 = u5
+            local v29 = v21.Frame.InputFrame
+            local v30 = u15
+            table.insert(v27, v28:Create(v29, v30, {
+                ["BackgroundTransparency"] = 1,
+                ["Visible"] = false
+            }))
+            local v31 = u17
+            local v32 = u5
+            local v33 = v21.Frame.ActionText
+            local v34 = u16
+            table.insert(v31, v32:Create(v33, v34, {
+                ["TextTransparency"] = 1,
+                ["Visible"] = false
+            }))
+            local v35 = u17
+            local v36 = u5
+            local v37 = v21.Frame.InputFrame.Hand
+            local v38 = u15
+            table.insert(v35, v36:Create(v37, v38, {
+                ["ImageTransparency"] = 1,
+                ["Visible"] = false
+            }))
+            for _, v39 in ipairs(u17) do
+                v39:Play()
+            end
+        end
+        u20.Enabled = false
+        delay(2, function() --[[ Line: 59 ]]
+            --[[
+            Upvalues:
+                [1] = u20
+            --]]
+            u20.Enabled = true
+        end)
+    end
+    if u20.Name == "TeleportPrompt" and u20.Style ~= "Default" then
+        u19(u20.Parent:GetAttribute("Tag") or u20.Parent.Parent:GetAttribute("Tag") or "DOOR")
+        v40()
+    end
+    if u20.Name == "QuestPrompt" then
+        if u7:GetAttribute("InventoryOpen") then
+            u7.ToggleWindow:Fire()
+        else
+            u7.ToggleWindow:Fire("QuestBoard")
+        end
+        v40()
+    end
+    if u20.Parent and u20.Parent.Name == "ExitPortal" then
+        u14:Play()
+        if not u12 then
+            u12 = true
+            u8:FireServer(u20.Parent.Parent)
+            u20.Enabled = false
+            wait(2)
+            u20.Enabled = true
+        end
+        if u12 then
+            u12 = false
+        end
+    end
+end
+v3.PromptTriggered:Connect(v41)
