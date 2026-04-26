@@ -1,0 +1,78 @@
+TeleEffect (1)
+
+local args = {
+	false,
+	true,
+	"Lumbertown Teleport Shard"
+}
+game:GetService("ReplicatedStorage"):WaitForChild("RepStore_CORE"):WaitForChild("Events"):WaitForChild("TeleEffect"):FireServer(unpack(args))
+
+
+TeleEffect (2)
+
+local args = {
+	true
+}
+game:GetService("ReplicatedStorage"):WaitForChild("RepStore_CORE"):WaitForChild("Events"):WaitForChild("TeleEffect"):FireServer(unpack(args))
+
+ConsumeItem (3)
+
+local args = {
+	{
+		Ownership = "Player",
+		Rarity = 1,
+		ImageId = "rbxassetid://8311572869",
+		Worth = 40,
+		Desc = "Teleports you to Lumbertown Castle.",
+		UseInfo = {
+			Location = "TeleportLocations.Lumbertown.Location",
+			Cooldown = 20
+		},
+		UID = "3735398612031803",
+		CanBeDropped = true,
+		Quantity = 1,
+		Name = "Lumbertown Teleport Shard",
+		Weight = 0.2,
+		MaxStack = 32,
+		Hotbar = true,
+		CanUse = true,
+		Tag = "Backpack"
+	}
+}
+game:GetService("ReplicatedStorage"):WaitForChild("RepStore_CORE"):WaitForChild("ClientEvents"):WaitForChild("ConsumeItem"):FireServer(unpack(args))
+
+
+TeleEffect (4)
+
+local args = {
+	false,
+	false
+}
+game:GetService("ReplicatedStorage"):WaitForChild("RepStore_CORE"):WaitForChild("Events"):WaitForChild("TeleEffect"):FireServer(unpack(args))
+
+
+FadeOUT (5)
+
+game:GetService("ReplicatedStorage"):WaitForChild("RepStore_CORE"):WaitForChild("Events"):WaitForChild("FadeOUT"):FireServer()
+
+
+ZoneEvent (6)
+
+local args = {
+	true
+}
+game:GetService("ReplicatedStorage"):WaitForChild("RepStore_CORE"):WaitForChild("Events"):WaitForChild("ZoneEvent"):FireServer(unpack(args))
+
+
+LoadResponse (7)
+
+game:GetService("ReplicatedStorage"):WaitForChild("RepStore_CORE"):WaitForChild("Events"):WaitForChild("LoadResponse"):FireServer()
+
+
+LastSafe (8)
+
+local args = {
+	CFrame.new(1733.1978759765625, 109.671875, 525.6771850585938, 0.999954104423523, 7.220783415640142e-10, -0.009582435712218285, 1.0268613737096643e-10, 1, 8.606995294258013e-08, 0.009582435712218285, -8.606698287394465e-08, 0.999954104423523)
+}
+game:GetService("ReplicatedStorage"):WaitForChild("RepStore_CORE"):WaitForChild("ClientEvents"):WaitForChild("LastSafe"):FireServer(unpack(args))
+
