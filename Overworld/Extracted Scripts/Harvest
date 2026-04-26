@@ -1,0 +1,117 @@
+local v1 = {}
+local v2 = game:GetService("ReplicatedStorage").RepStore_CORE
+local u3 = v2.Prompts
+local u4 = v2.Events
+local u5 = game.Players.LocalPlayer.PlayerScripts.Player_Scripts.InventoryManager.SendNotification
+local function v8(p6, p7) --[[ Line: 9 ]]
+    return p6:GetAttribute(p7)
+end
+local u18 = {
+    ["CanChop"] = { v8, function(p9) --[[ Line: 28 ]]
+            return p9:GetAttribute("Tag") == "TREE" and true or p9:GetAttribute("Tag") == "Log"
+        end },
+    ["CanMine"] = { v8, function(p10) --[[ Line: 33 ]]
+            local v11
+            if p10:GetAttribute("Tag") == "Mineable" then
+                v11 = true
+            else
+                local v12 = p10.Parent
+                if not v12 then
+                    return false
+                end
+                if v12:GetAttribute("Tag") == "Mineable" then
+                    return v12
+                end
+                v11 = false
+            end
+            return v11
+        end },
+    ["CanBug"] = { v8, function(p13) --[[ Line: 38 ]]
+            return p13:GetAttribute("Tag") == "BugCatch" and "foli" or false, false
+        end },
+    ["Bush"] = { function() --[[ Line: 42 ]]
+            return true
+        end, function(p14) --[[ Line: 43 ]]
+            return p14.Name == "BUSH" and "foli" or false
+        end },
+    ["Shovel"] = { function(p15, p16) --[[ Line: 56 ]]
+            return p15.Name == p16
+        end, function(p17) --[[ Line: 57 ]]
+            if p17.Parent == workspace["Treasure Nodes"] then
+                return true, false
+            end
+        end }
+}
+local function u29(p19, p20) --[[ Line: 65 ]]
+    --[[
+    Upvalues:
+        [1] = u3
+    --]]
+    local v21 = p19:GetAttribute("Tag")
+    if v21 then
+        if not (p19:FindFirstChild("ProgPart") or p19:FindFirstChild("ProgGui")) then
+            if string.match(v21:lower(), "tree") ~= nil then
+                local v22 = u3.ProgPart:Clone()
+                local v23 = u3.ProgGui:Clone()
+                v23:SetAttribute("OnObject", true)
+                v23.Parent = v22
+                local v24 = p19.Parent:GetPivot().Position
+                local v25 = v24.X
+                local v26 = p20.Owner.Head.Position.Y
+                local v27 = v24.Z
+                v22.Position = Vector3.new(v25, v26, v27)
+                v22.Parent = p19
+                require(v22.ProgGui.ProgCircle.ModuleScript)
+                return
+            end
+            local v28 = u3.ProgGui:Clone()
+            v28.Parent = p19
+            require(v28.ProgCircle.ModuleScript)
+        end
+    end
+end
+function v1.Setup(u30) --[[ Line: 89 ]]
+    --[[
+    Upvalues:
+        [1] = u18
+        [2] = u5
+        [3] = u29
+        [4] = u4
+    --]]
+    if u30 then
+        local v31 = {}
+        for v32, u33 in pairs(u18) do
+            if u33[1](u30.Tool, v32) then
+                local function v38(p34) --[[ Line: 96 ]]
+                    --[[
+                    Upvalues:
+                        [1] = u33
+                        [2] = u30
+                        [3] = u5
+                        [4] = u29
+                        [5] = u4
+                    --]]
+                    local v35, v36 = u33[2](p34)
+                    local v37 = p34:GetAttribute("Level") or 0
+                    if (u30.Attributes.GatherLevel or 1) < v37 then
+                        u5:Fire("Tier " .. v37 .. " Tool Required.")
+                        return false
+                    end
+                    if v35 and (typeof(v35) == "Instance" and v35) then
+                        p34 = v35
+                    end
+                    if v35 and v36 ~= false then
+                        u29(p34, u30)
+                    end
+                    if v35 then
+                        u4.HarvestTrigger:FireServer(p34, u30.Tool)
+                    end
+                    return v35
+                end
+                table.insert(v31, v38)
+            end
+        end
+        return v31
+    end
+end
+return v1
