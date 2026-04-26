@@ -1,0 +1,505 @@
+local u1 = {}
+local v2 = game:GetService("Players")
+local u3 = game:GetService("RunService")
+local u4 = v2.LocalPlayer
+local u5 = u4.PlayerGui:WaitForChild("LockPicking")
+local u6 = u4.PlayerGui:WaitForChild("Fishing"):WaitForChild("Frame")
+local u7 = u5:WaitForChild("MainFrame")
+local u8 = u7:WaitForChild("Controls")
+local u9 = false
+local u10 = false
+local u11 = ""
+local u12 = nil
+local u13 = 0
+local u14 = game:GetService("ContextActionService")
+local v15 = game:GetService("ReplicatedStorage").RepStore_CORE
+local u16 = game:GetService("TweenService")
+local u17 = require(u4.PlayerScripts.PlayerModule).controls.controlSettings
+local v18 = u4.PlayerScripts.Player_Scripts
+local u19 = script.Parent.InventoryManager
+local u20 = require(u7.LockHealth.ProgCircle.ModuleScript)
+require(u19.SlotUtil)
+local u21 = require(v18.UseItem)
+local v22 = require(v18.InputManager)
+local u23 = u19.SendNotification
+local u24 = v15.ClientEvents
+local u25 = u4.Character or u4.CharacterAdded:Wait()
+local v26 = u7.LockHealth
+local u27 = v26.Logo
+local u28 = v26.Logo2
+local u29 = v26.Logo3
+local u30 = v26.Logo4
+local u31 = { u28, u29, u30 }
+local u32 = TweenInfo.new(0.03, Enum.EasingStyle.Circular, Enum.EasingDirection.Out, 0, true, 0)
+local u33 = game:GetService("SoundService").Sound_CORE:WaitForChild("LockPicking")
+v22:ChangeConnect("Jump", function(p34, p35) --[[ Name: UpdateBinds, Line 55 ]]
+    --[[
+    Upvalues:
+        [1] = u5
+        [2] = u6
+    --]]
+    if p35 == "pc" then
+        u5.MainFrame.Lane1.LaneLable.Text = "A"
+        u5.MainFrame.Lane2.LaneLable.Text = "W"
+        u5.MainFrame.Lane3.LaneLable.Text = "D"
+        u6.Binds.A_Label.TextLabel.Text = "A"
+        u6.Binds.D_Label.TextLabel.Text = "D"
+    else
+        u5.MainFrame.Lane1.LaneLable.Text = "Lt"
+        u5.MainFrame.Lane2.LaneLable.Text = p34
+        u5.MainFrame.Lane3.LaneLable.Text = "Rt"
+        u6.Binds.A_Label.TextLabel.Text = "Lt"
+        u6.Binds.D_Label.TextLabel.Text = "Rt"
+    end
+end)
+local u36 = 5
+local function u40() --[[ Line: 82 ]]
+    --[[
+    Upvalues:
+        [1] = u5
+        [2] = u36
+        [3] = u12
+    --]]
+    local v37 = false
+    local v38 = nil
+    while v37 == false do
+        local v39 = math.random(1, 3)
+        if v39 == 1 then
+            v38 = u5.MainFrame.Lane1
+        end
+        if v39 == 2 then
+            v38 = u5.MainFrame.Lane2
+        end
+        if v39 == 3 then
+            v38 = u5.MainFrame.Lane3
+        end
+        if u36 == 0 then
+            v37 = true
+            u36 = 4
+        end
+        if u12 ~= v38 and not v37 then
+            v37 = true
+            u36 = u36 - 1
+        end
+    end
+    u12 = v38
+    return v38 or u5.MainFrame.Lane1
+end
+local function u42(_, p41) --[[ Line: 136 ]]
+    --[[
+    Upvalues:
+        [1] = u10
+        [2] = u11
+        [3] = u5
+    --]]
+    if p41 == Enum.UserInputState.Begin then
+        u10 = true
+        u11 = "Lane1"
+        u5.MainFrame.Lane1.ImageButton.Image = "http://www.roblox.com/asset/?id=6977636198"
+    end
+end
+local function u44(_, p43) --[[ Line: 142 ]]
+    --[[
+    Upvalues:
+        [1] = u10
+        [2] = u11
+        [3] = u5
+    --]]
+    if p43 == Enum.UserInputState.Begin then
+        u10 = true
+        u11 = "Lane2"
+        u5.MainFrame.Lane2.ImageButton.Image = "http://www.roblox.com/asset/?id=6977636198"
+    end
+end
+local function u46(_, p45) --[[ Line: 148 ]]
+    --[[
+    Upvalues:
+        [1] = u10
+        [2] = u11
+        [3] = u5
+    --]]
+    if p45 == Enum.UserInputState.Begin then
+        u10 = true
+        u11 = "Lane3"
+        u5.MainFrame.Lane3.ImageButton.Image = "http://www.roblox.com/asset/?id=6977636198"
+    end
+end
+local function u76(u47, u48, u49, u50) --[[ Line: 167 ]]
+    --[[
+    Upvalues:
+        [1] = u9
+        [2] = u14
+        [3] = u42
+        [4] = u44
+        [5] = u46
+        [6] = u7
+        [7] = u21
+        [8] = u33
+        [9] = u40
+        [10] = u3
+        [11] = u5
+        [12] = u10
+        [13] = u11
+        [14] = u16
+        [15] = u32
+        [16] = u13
+        [17] = u20
+        [18] = u30
+        [19] = u29
+        [20] = u28
+        [21] = u27
+        [22] = u23
+        [23] = u24
+    --]]
+    if u47 and not u9 then
+        local u51 = nil
+        local u52 = false
+        local u53 = 0
+        local u54 = u50
+        local u55 = -1
+        u9 = true
+        local v56 = Enum.ContextActionPriority.High.Value + 1
+        u14:BindActionAtPriority("Lane1", u42, true, v56, Enum.KeyCode.A, Enum.KeyCode.ButtonL2)
+        u14:BindActionAtPriority("Lane2", u44, true, v56, Enum.KeyCode.W, Enum.KeyCode.ButtonA)
+        u14:BindActionAtPriority("Lane3", u46, true, v56, Enum.KeyCode.D, Enum.KeyCode.ButtonR2)
+        local v57 = UDim2.new(1, 0, 0.06, 0)
+        u7.Lane1.ImageButton.Size = v57
+        u7.Lane2.ImageButton.Size = v57
+        u7.Lane3.ImageButton.Size = v57
+        u7.Lane1.ImageButton.Image = "http://www.roblox.com/asset/?id=7133778356"
+        u7.Lane2.ImageButton.Image = "http://www.roblox.com/asset/?id=7133778356"
+        u7.Lane3.ImageButton.Image = "http://www.roblox.com/asset/?id=7133778356"
+        u21.SetPicklocking(true)
+        u33.Loop:Play()
+        local u58 = {}
+        local u59 = u40()
+        local v74 = u3.Heartbeat:Connect(function(p60) --[[ Line: 199 ]]
+            --[[
+            Upvalues:
+                [1] = u51
+                [2] = u55
+                [3] = u53
+                [4] = u48
+                [5] = u50
+                [6] = u59
+                [7] = u40
+                [8] = u54
+                [9] = u5
+                [10] = u58
+                [11] = u47
+                [12] = u49
+                [13] = u10
+                [14] = u11
+                [15] = u33
+                [16] = u16
+                [17] = u32
+                [18] = u13
+                [19] = u52
+                [20] = u20
+                [21] = u30
+                [22] = u29
+                [23] = u28
+                [24] = u27
+            --]]
+            if u51 ~= nil then
+                return
+            end
+            if u55 < 0 and u53 < u48 then
+                if u50 <= 0 then
+                    u59 = u40()
+                    u50 = u54
+                else
+                    u50 = u50 - 1
+                end
+                local v61 = u5.MainFrame.Lane1.Note:Clone()
+                v61.Visible = true
+                v61.Parent = u59
+                local v62 = u58
+                table.insert(v62, v61)
+                u53 = u53 + 1
+                u55 = u47 / (p60 / 0.02)
+            end
+            for v63, v64 in u58 do
+                if u51 ~= nil then
+                    break
+                end
+                v64.Position = UDim2.new(0.065, 0, v64.Position.Y.Scale + u49 * (p60 / 0.02), 0)
+                if v63 == 1 and (u10 == true and (v64.Position.Y.Scale <= 0.7 or v64.Parent.Name ~= u11)) then
+                    u51 = true
+                    v64.PinPNG.ImageColor3 = Color3.new(1, 0, 0)
+                    u33.BreakPick:Play()
+                end
+                if v64.Position.Y.Scale > 0.7 and u10 == true then
+                    u10 = false
+                    if v64.Parent.Name == u11 then
+                        local v65 = u11
+                        if v65 == "Lane1" then
+                            u33.Pin1:Play()
+                        end
+                        if v65 == "Lane2" then
+                            u33.Pin2:Play()
+                        end
+                        if v65 == "Lane3" then
+                            u33.Pin3:Play()
+                        end
+                        table.remove(u58, v63)
+                        local v66 = u58[v63]
+                        if v66 ~= nil then
+                            v66.Position = UDim2.new(0.065, 0, v66.Position.Y.Scale + u49 * (p60 / 0.02), 0)
+                        end
+                        local u67 = u5.MainFrame.Lane1.ImageButton.Sparkle:Clone()
+                        local v68 = math.random(-2, 4)
+                        u67.Position = UDim2.new(v68 * 0.1, 0, 0, 0)
+                        u67.Parent = v64.Parent.ImageButton
+                        u67.Visible = true
+                        local u69 = v64.Parent.ImageButton
+                        task.spawn(function() --[[ Line: 250 ]]
+                            --[[
+                            Upvalues:
+                                [1] = u16
+                                [2] = u69
+                                [3] = u32
+                                [4] = u67
+                            --]]
+                            u16:Create(u69, u32, {
+                                ["Size"] = UDim2.new(1, 0, 0.08, 0)
+                            }):Play()
+                            u69.Image = "http://www.roblox.com/asset/?id=7133778356"
+                            local v70 = 10
+                            while v70 > 0 do
+                                v70 = v70 - 1
+                                local v71 = u67
+                                v71.Rotation = v71.Rotation + 2
+                                local v72 = u67
+                                v72.ImageTransparency = v72.ImageTransparency + 0.1
+                                wait(0.05)
+                            end
+                            u67:Destroy()
+                        end)
+                        v64:Destroy()
+                        u13 = u13 + 1
+                        u52 = true
+                        local v73 = (u48 - u13) / u48
+                        u20:LockProg(v73)
+                        if v73 % 0.25 == 0 then
+                            if v73 == 0.25 then
+                                u30.ImageTransparency = 0
+                                u29.ImageTransparency = 1
+                            elseif v73 == 0.5 then
+                                u29.ImageTransparency = 0
+                                u28.ImageTransparency = 1
+                            elseif v73 == 0.75 then
+                                u28.ImageTransparency = 0
+                                u27.ImageTransparency = 1
+                            end
+                        end
+                        if u13 == u48 then
+                            u51 = false
+                        end
+                    else
+                        v64.PinPNG.ImageColor3 = Color3.new(1, 0, 0)
+                        u33.BreakPick:Play()
+                        u51 = true
+                    end
+                end
+                if v64.Position.Y.Scale > 0.85 and not u52 then
+                    u51 = true
+                    v64.PinPNG.ImageColor3 = Color3.new(1, 0, 0)
+                    u33.BreakPick:Play()
+                end
+                u52 = false
+            end
+            if u55 >= 0 then
+                u55 = u55 - u49
+            end
+        end)
+        while u51 == nil do
+            task.wait(0.5)
+        end
+        v74:Disconnect()
+        u21.SetPicklocking(false)
+        u33.Loop:Stop()
+        if u51 == false then
+            u23:Fire("Lockpick Successful!", "Thieving")
+            u33.Unlock:Play()
+        end
+        u24.LockpickEvent:FireServer("D2", u13)
+        u14:UnbindAction("Lane1")
+        u14:UnbindAction("Lane2")
+        u14:UnbindAction("Lane3")
+        u9 = false
+        u10 = false
+        u11 = ""
+        u13 = 0
+        for _, v75 in ipairs(u58) do
+            v75:Destroy()
+        end
+    end
+end
+local u77 = u8:WaitForChild("StartButton")
+local u78 = u8:WaitForChild("CancelButton")
+local u79 = {}
+local u80 = nil
+local function u84(p81, p82) --[[ Line: 340 ]]
+    --[[
+    Upvalues:
+        [1] = u7
+        [2] = u16
+    --]]
+    for _, v83 in pairs(u7.Dark.InfoBox:GetChildren()) do
+        u16:Create(v83, TweenInfo.new(p82), {
+            ["TextTransparency"] = p81
+        }):Play()
+    end
+end
+local function u87() --[[ Line: 346 ]]
+    --[[
+    Upvalues:
+        [1] = u84
+        [2] = u16
+        [3] = u78
+        [4] = u77
+        [5] = u8
+        [6] = u79
+    --]]
+    local v85 = TweenInfo.new(0.4, Enum.EasingStyle.Circular, Enum.EasingDirection.Out)
+    u84(1, 1.5)
+    u16:Create(u78.TextButton, v85, {
+        ["TextTransparency"] = 1
+    }):Play()
+    u16:Create(u77.TextButton, v85, {
+        ["TextTransparency"] = 1
+    }):Play()
+    u16:Create(u8, v85, {
+        ["Position"] = UDim2.new(0.5, 0, 0, 0)
+    }):Play()
+    for _, v86 in pairs(u79) do
+        v86:Disconnect()
+    end
+end
+local function u93(p88) --[[ Line: 360 ]]
+    local v89 = -1
+    local v90 = nil
+    for v91, v92 in {
+        [0] = "(EASY)",
+        [0.5] = "(NORMAL)",
+        [0.75] = "(DIFFICULT)",
+        [0.9] = "(IMPOSSIBLE)"
+    } do
+        if v89 < v91 and v91 <= p88 then
+            v90 = v92
+            v89 = v91
+        end
+    end
+    return v90
+end
+local function v106(...) --[[ Line: 375 ]]
+    --[[
+    Upvalues:
+        [1] = u25
+        [2] = u4
+        [3] = u17
+        [4] = u24
+        [5] = u80
+        [6] = u7
+        [7] = u93
+        [8] = u84
+        [9] = u16
+        [10] = u8
+        [11] = u77
+        [12] = u78
+        [13] = u5
+        [14] = u79
+        [15] = u87
+        [16] = u1
+        [17] = u20
+        [18] = u27
+        [19] = u31
+        [20] = u19
+        [21] = u76
+    --]]
+    u25 = u4.Character
+    local v94 = u25
+    if v94 then
+        v94 = u25:FindFirstChild("HumanoidRootPart")
+    end
+    if not v94 or next(u17.UseStack) then
+        return u24.ContainerInteract:FireServer()
+    end
+    u80 = v94.Position
+    u17.Move.Locked = true
+    u17.SetUsing("Lockpick", true)
+    local v95 = { ... }
+    local v96 = v95[3] / 0.0155
+    u7.Dark.InfoBox.HintLabel.Text = u93(v96)
+    u7.Dark.InfoBox.HintLabel.TextColor3 = Color3.new(v96, 1 - v96, 0)
+    local v97 = u7.Dark.InfoBox.TextLabel
+    local v98 = v95[2]
+    v97.Text = "Pins: " .. tostring(v98)
+    u84(0, 0.3)
+    u16:Create(u7.Dark, TweenInfo.new(0), {
+        ["BackgroundTransparency"] = 0.4
+    }):Play()
+    u16:Create(u8, TweenInfo.new(0), {
+        ["Position"] = UDim2.new(1, 0, 0, 0)
+    }):Play()
+    u16:Create(u77.TextButton, TweenInfo.new(0), {
+        ["TextTransparency"] = 0
+    }):Play()
+    u16:Create(u78.TextButton, TweenInfo.new(0), {
+        ["TextTransparency"] = 0
+    }):Play()
+    u5.Enabled = true
+    local v99 = u79
+    local v100 = u77.TextButton.Activated
+    local function v101() --[[ Line: 400 ]]
+        --[[
+        Upvalues:
+            [1] = u87
+            [2] = u16
+            [3] = u7
+            [4] = u1
+        --]]
+        u87()
+        u16:Create(u7.Dark, TweenInfo.new(2), {
+            ["BackgroundTransparency"] = 1
+        }):Play()
+        u1.Decide = true
+    end
+    table.insert(v99, v100:Connect(v101))
+    local v102 = u79
+    local v103 = u78.TextButton.Activated
+    local function v104() --[[ Line: 406 ]]
+        --[[
+        Upvalues:
+            [1] = u87
+            [2] = u1
+        --]]
+        u87()
+        u1.Decide = false
+    end
+    table.insert(v102, v103:Connect(v104))
+    u20:Reset()
+    u27.ImageTransparency = 0
+    for _, v105 in pairs(u31) do
+        v105.ImageTransparency = 1
+    end
+    u5.Enabled = true
+    u19.ToggleWindow:Fire("Binds")
+    u19.LockCursor:Invoke()
+    while u1.Decide == nil and (v94.Position - u80).Magnitude <= 6 do
+        task.wait()
+    end
+    u19.LockCursor:Invoke(true)
+    if u1.Decide then
+        u76(...)
+    else
+        u24.ContainerInteract:FireServer()
+    end
+    u17.SetUsing("Lockpick", false)
+    u17.Move.Locked = false
+    u1.Decide = nil
+    u5.Enabled = false
+end
+u24.StartLockMinigame.OnClientEvent:Connect(v106)
+return u1
