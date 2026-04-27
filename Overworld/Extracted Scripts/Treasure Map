@@ -1,0 +1,43 @@
+FIRST MAP (just now realising i forgot to include the ConsumeItem):
+
+UpdateQuests (1)
+
+local args = {
+	"TempQuest_Treasure3141"
+}
+game:GetService("ReplicatedStorage"):WaitForChild("RepStore_CORE"):WaitForChild("ClientEvents"):WaitForChild("UpdateQuests"):FireServer(unpack(args))
+
+SwitchViews (2)
+
+game:GetService("ReplicatedStorage"):WaitForChild("RepStore_CORE"):WaitForChild("ClientEvents"):WaitForChild("SwitchViews"):FireServer()
+
+
+SECOND MAP (for more reference):
+
+ConsumeItem (1)
+
+local args = {
+	{
+		Ownership = "Steal",
+		Quantity = 1,
+		Name = "Treasure Map",
+		UID = "0372230377932609"
+	}
+}
+game:GetService("ReplicatedStorage"):WaitForChild("RepStore_CORE"):WaitForChild("ClientEvents"):WaitForChild("ConsumeItem"):FireServer(unpack(args))
+
+
+UpdateQuests (2)
+
+local args = {
+	"TempQuest_Treasure7655"
+}
+game:GetService("ReplicatedStorage"):WaitForChild("RepStore_CORE"):WaitForChild("ClientEvents"):WaitForChild("UpdateQuests"):FireServer(unpack(args))
+
+
+SwitchViews (3)
+
+game:GetService("ReplicatedStorage"):WaitForChild("RepStore_CORE"):WaitForChild("ClientEvents"):WaitForChild("SwitchViews"):FireServer()
+
+
+I believe this SwitchView thing isnt very important. The SwitchView happens for example when you open and close the inventory.
