@@ -1,0 +1,56 @@
+May be a bit messy, Mainly, the only things that happen are HitPlayer, and EnableTrail (The trail that your sword does visually)
+
+HitPlayer:
+
+local args = {
+	workspace:WaitForChild("Enemy Regions"):WaitForChild("Goblin Front"):WaitForChild("Goblin"),
+	"Bronze Sword",
+	{
+		Stack = 1
+	}
+}
+game:GetService("ReplicatedStorage"):WaitForChild("RepStore_CORE"):WaitForChild("Events"):WaitForChild("HitPlayer"):FireServer(unpack(args))
+
+
+EnableTrial:
+
+local args = {
+	false
+}
+game:GetService("ReplicatedStorage"):WaitForChild("RepStore_CORE"):WaitForChild("Events"):WaitForChild("EnableTrail"):FireServer(unpack(args))
+
+
+EnableTrial (Another one, looks like the only different is the true is false, vise verca):
+
+local args = {
+	true
+}
+game:GetService("ReplicatedStorage"):WaitForChild("RepStore_CORE"):WaitForChild("Events"):WaitForChild("EnableTrail"):FireServer(unpack(args))
+
+
+
+BOW LOGIC:
+
+The only thing that happens when you fire your bow is this:
+
+FireFastCast:
+
+local args = {
+	vector.create(2012.3624267578125, 115.40386962890625, 206.08425903320312),
+	1,
+	"Wooden Bow"
+}
+game:GetService("ReplicatedStorage"):WaitForChild("RepStore_CORE"):WaitForChild("Events"):WaitForChild("FireFastCast"):FireServer(unpack(args))
+
+
+It doesnt look like anything happens when the arrow actually hits the goblin, or enemy.
+
+(Second instance of the FireFastCast, I shot twice.:
+
+local args = {
+	vector.create(2008.3143310546875, 110.04425811767578, 202.2119903564453),
+	1,
+	"Wooden Bow"
+}
+game:GetService("ReplicatedStorage"):WaitForChild("RepStore_CORE"):WaitForChild("Events"):WaitForChild("FireFastCast"):FireServer(unpack(args))
+)
